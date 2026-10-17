@@ -1,0 +1,445 @@
+{
+  "totalLoadTimeMs": 837,
+  "performanceData": {
+    "navigation": {
+      "ttfb": 1.0999999046325684,
+      "domInteractive": 36.69999980926514,
+      "domContentLoaded": 236.09999990463257,
+      "loadEventEnd": 245.19999980926514,
+      "transferSize": 93748,
+      "encodedBodySize": 93448,
+      "decodedBodySize": 93448
+    },
+    "vitals": {
+      "fcp": 208,
+      "lcp": 208,
+      "cls": 0.005259894794887966
+    },
+    "domElementCount": 1761,
+    "memory": {
+      "usedJSHeapSize": 10000000,
+      "totalJSHeapSize": 10000000,
+      "jsHeapSizeLimit": 3760000000
+    },
+    "resources": [
+      {
+        "name": "http://localhost:5500/style.css?v=3.6",
+        "initiatorType": "link",
+        "duration": 2.5,
+        "transferSize": 108260,
+        "decodedBodySize": 107960
+      },
+      {
+        "name": "http://localhost:5500/js/main.js?v=3.9",
+        "initiatorType": "script",
+        "duration": 2.0999999046325684,
+        "transferSize": 14806,
+        "decodedBodySize": 14506
+      },
+      {
+        "name": "http://localhost:5500/js/data/studentsData.js",
+        "initiatorType": "script",
+        "duration": 11.100000381469727,
+        "transferSize": 9170,
+        "decodedBodySize": 8870
+      },
+      {
+        "name": "http://localhost:5500/js/data/teachersData.js",
+        "initiatorType": "script",
+        "duration": 12.399999618530273,
+        "transferSize": 518,
+        "decodedBodySize": 218
+      },
+      {
+        "name": "http://localhost:5500/js/api/teacherApi.js",
+        "initiatorType": "script",
+        "duration": 15.5,
+        "transferSize": 3818,
+        "decodedBodySize": 3518
+      },
+      {
+        "name": "http://localhost:5500/js/api/studentApi.js",
+        "initiatorType": "script",
+        "duration": 17.799999713897705,
+        "transferSize": 3793,
+        "decodedBodySize": 3493
+      },
+      {
+        "name": "http://localhost:5500/js/data/calendarData.js",
+        "initiatorType": "script",
+        "duration": 10.599999904632568,
+        "transferSize": 7211,
+        "decodedBodySize": 6911
+      },
+      {
+        "name": "http://localhost:5500/js/modules/students/topAchievers.js",
+        "initiatorType": "script",
+        "duration": 14.199999809265137,
+        "transferSize": 2667,
+        "decodedBodySize": 2367
+      },
+      {
+        "name": "http://localhost:5500/js/utils/dateUtils.js",
+        "initiatorType": "script",
+        "duration": 14.400000095367432,
+        "transferSize": 2989,
+        "decodedBodySize": 2689
+      },
+      {
+        "name": "http://localhost:5500/js/modules/students/studentModal.js",
+        "initiatorType": "script",
+        "duration": 19.09999990463257,
+        "transferSize": 30276,
+        "decodedBodySize": 29976
+      },
+      {
+        "name": "http://localhost:5500/js/modules/attendance/attendanceAnalytics.js",
+        "initiatorType": "script",
+        "duration": 20.300000190734863,
+        "transferSize": 1526,
+        "decodedBodySize": 1226
+      },
+      {
+        "name": "http://localhost:5500/js/modules/students/studentRoster.js",
+        "initiatorType": "script",
+        "duration": 20.800000190734863,
+        "transferSize": 3134,
+        "decodedBodySize": 2834
+      },
+      {
+        "name": "http://localhost:5500/js/modules/attendance/attendanceRoster.js",
+        "initiatorType": "script",
+        "duration": 21.59999990463257,
+        "transferSize": 15384,
+        "decodedBodySize": 15084
+      },
+      {
+        "name": "http://localhost:5500/js/modules/calendar/calendarModule.js",
+        "initiatorType": "script",
+        "duration": 23.800000190734863,
+        "transferSize": 3769,
+        "decodedBodySize": 3469
+      },
+      {
+        "name": "http://localhost:5500/js/modules/teachers/teacherRoster.js",
+        "initiatorType": "script",
+        "duration": 25.300000190734863,
+        "transferSize": 5605,
+        "decodedBodySize": 5305
+      },
+      {
+        "name": "http://localhost:5500/js/modules/teachers/teacherModal.js",
+        "initiatorType": "script",
+        "duration": 28.09999990463257,
+        "transferSize": 26219,
+        "decodedBodySize": 25919
+      },
+      {
+        "name": "http://localhost:5500/js/modules/students/studentForm.js",
+        "initiatorType": "script",
+        "duration": 28.40000009536743,
+        "transferSize": 15254,
+        "decodedBodySize": 14954
+      },
+      {
+        "name": "http://localhost:5500/js/modules/teachers/teacherForm.js",
+        "initiatorType": "script",
+        "duration": 30.90000009536743,
+        "transferSize": 11275,
+        "decodedBodySize": 10975
+      },
+      {
+        "name": "http://localhost:5500/js/api/subjectApi.js",
+        "initiatorType": "script",
+        "duration": 30.5,
+        "transferSize": 4700,
+        "decodedBodySize": 4400
+      },
+      {
+        "name": "http://localhost:5500/js/modules/subjects/subjectModal.js",
+        "initiatorType": "script",
+        "duration": 36,
+        "transferSize": 17374,
+        "decodedBodySize": 17074
+      },
+      {
+        "name": "http://localhost:5500/js/modules/subjects/subjectRoster.js",
+        "initiatorType": "script",
+        "duration": 36.200000286102295,
+        "transferSize": 5038,
+        "decodedBodySize": 4738
+      },
+      {
+        "name": "http://localhost:5500/js/modules/subjects/subjectForm.js",
+        "initiatorType": "script",
+        "duration": 34.69999980926514,
+        "transferSize": 5453,
+        "decodedBodySize": 5153
+      },
+      {
+        "name": "http://localhost:5500/js/modules/subjects/subjectUtils.js",
+        "initiatorType": "script",
+        "duration": 35.39999961853027,
+        "transferSize": 2735,
+        "decodedBodySize": 2435
+      },
+      {
+        "name": "http://localhost:5500/js/api/classApi.js",
+        "initiatorType": "script",
+        "duration": 38.09999990463257,
+        "transferSize": 6810,
+        "decodedBodySize": 6510
+      },
+      {
+        "name": "http://localhost:5500/js/modules/classes/classModal.js",
+        "initiatorType": "script",
+        "duration": 38.5,
+        "transferSize": 25330,
+        "decodedBodySize": 25030
+      },
+      {
+        "name": "http://localhost:5500/js/modules/classes/classUtils.js",
+        "initiatorType": "script",
+        "duration": 39.5,
+        "transferSize": 2293,
+        "decodedBodySize": 1993
+      },
+      {
+        "name": "http://localhost:5500/js/modules/classes/classForm.js",
+        "initiatorType": "script",
+        "duration": 40.09999990463257,
+        "transferSize": 4104,
+        "decodedBodySize": 3804
+      },
+      {
+        "name": "http://localhost:5500/js/modules/classes/classRoster.js",
+        "initiatorType": "script",
+        "duration": 41.40000009536743,
+        "transferSize": 4763,
+        "decodedBodySize": 4463
+      },
+      {
+        "name": "http://localhost:5500/js/utils/icons.js",
+        "initiatorType": "script",
+        "duration": 11.400000095367432,
+        "transferSize": 11409,
+        "decodedBodySize": 11109
+      },
+      {
+        "name": "http://localhost:5500/js/modules/attendance/attendanceState.js",
+        "initiatorType": "script",
+        "duration": 10.099999904632568,
+        "transferSize": 503,
+        "decodedBodySize": 203
+      },
+      {
+        "name": "http://localhost:5500/js/modules/calendar/calendarState.js",
+        "initiatorType": "script",
+        "duration": 11.099999904632568,
+        "transferSize": 730,
+        "decodedBodySize": 430
+      },
+      {
+        "name": "http://localhost:5500/js/modules/calendar/termProgress.js",
+        "initiatorType": "script",
+        "duration": 11.599999904632568,
+        "transferSize": 2749,
+        "decodedBodySize": 2449
+      },
+      {
+        "name": "http://localhost:5500/js/modules/calendar/calendarGrid.js",
+        "initiatorType": "script",
+        "duration": 10.800000190734863,
+        "transferSize": 4814,
+        "decodedBodySize": 4514
+      },
+      {
+        "name": "http://localhost:5500/js/modules/calendar/calendarSidebar.js",
+        "initiatorType": "script",
+        "duration": 11.5,
+        "transferSize": 5403,
+        "decodedBodySize": 5103
+      },
+      {
+        "name": "http://localhost:8080/api/classes?activeOnly=true",
+        "initiatorType": "fetch",
+        "duration": 47.200000286102295,
+        "transferSize": 0,
+        "decodedBodySize": 0
+      },
+      {
+        "name": "http://localhost:8080/api/subjects?activeOnly=true",
+        "initiatorType": "fetch",
+        "duration": 43.59999990463257,
+        "transferSize": 0,
+        "decodedBodySize": 0
+      },
+      {
+        "name": "http://localhost:8080/api/subjects?activeOnly=true",
+        "initiatorType": "fetch",
+        "duration": 46.19999980926514,
+        "transferSize": 0,
+        "decodedBodySize": 0
+      },
+      {
+        "name": "http://localhost:8080/api/subjects",
+        "initiatorType": "fetch",
+        "duration": 42,
+        "transferSize": 0,
+        "decodedBodySize": 0
+      },
+      {
+        "name": "http://localhost:8080/api/classes",
+        "initiatorType": "fetch",
+        "duration": 7.599999904632568,
+        "transferSize": 0,
+        "decodedBodySize": 0
+      },
+      {
+        "name": "http://localhost:8080/api/students",
+        "initiatorType": "fetch",
+        "duration": 29.399999618530273,
+        "transferSize": 0,
+        "decodedBodySize": 0
+      },
+      {
+        "name": "http://localhost:8080/api/teachers",
+        "initiatorType": "fetch",
+        "duration": 5.699999809265137,
+        "transferSize": 0,
+        "decodedBodySize": 0
+      }
+    ]
+  },
+  "cdpMap": {
+    "Timestamp": 2640992.292658,
+    "AudioHandlers": 0,
+    "AudioWorkletProcessors": 0,
+    "Documents": 2,
+    "Frames": 2,
+    "JSEventListeners": 171,
+    "LayoutObjects": 2719,
+    "MediaKeySessions": 0,
+    "MediaKeys": 0,
+    "Nodes": 5319,
+    "Resources": 35,
+    "ContextLifecycleStateObservers": 4,
+    "V8PerContextDatas": 3,
+    "WorkerGlobalScopes": 0,
+    "UACSSResources": 1,
+    "RTCPeerConnections": 0,
+    "ResourceFetchers": 2,
+    "AdSubframes": 0,
+    "DetachedScriptStates": 2,
+    "ArrayBufferContents": 0,
+    "LayoutCount": 23,
+    "RecalcStyleCount": 26,
+    "LayoutDuration": 0.068973,
+    "RecalcStyleDuration": 0.04114,
+    "DevToolsCommandDuration": 0.002994,
+    "ScriptDuration": 0.054462,
+    "V8CompileDuration": 0,
+    "TaskDuration": 0.316435,
+    "TaskOtherDuration": 0.148866,
+    "ThreadTime": 0.198289,
+    "ProcessTime": 0.627598,
+    "JSHeapUsedSize": 1337316,
+    "JSHeapTotalSize": 3145728,
+    "FirstMeaningfulPaint": 2640989.643136,
+    "DomContentLoaded": 2640989.674416,
+    "NavigationStart": 2640989.438358
+  },
+  "viewTimings": {
+    "Students Directory": 129,
+    "Teachers Directory": 55,
+    "Classes & Rosters": 57,
+    "Subjects Curriculum": 53,
+    "Enrollment Form": 57
+  },
+  "consoleLogs": [
+    {
+      "type": "log",
+      "text": "🎓 EduManage SMS dynamic dashboard connected to student data."
+    },
+    {
+      "type": "log",
+      "text": "7sss"
+    },
+    {
+      "type": "log",
+      "text": "hellohellohellohellohello"
+    },
+    {
+      "type": "log",
+      "text": "false"
+    },
+    {
+      "type": "log",
+      "text": "false"
+    },
+    {
+      "type": "log",
+      "text": "Set(3)"
+    },
+    {
+      "type": "log",
+      "text": "true"
+    },
+    {
+      "type": "log",
+      "text": "Mensah"
+    },
+    {
+      "type": "log",
+      "text": "this is an empty array"
+    },
+    {
+      "type": "log",
+      "text": "you are mature"
+    },
+    {
+      "type": "log",
+      "text": "🌐 Loaded 16 subject records from database (activeOnly: false)."
+    },
+    {
+      "type": "log",
+      "text": "🚀 Subjects Directory successfully synced with 16 courses from database."
+    },
+    {
+      "type": "log",
+      "text": "🌐 Loaded 16 subject records from database (activeOnly: true)."
+    },
+    {
+      "type": "log",
+      "text": "🌐 Loaded 4 class records from database (activeOnly: true)."
+    },
+    {
+      "type": "log",
+      "text": "🌐 Loaded 16 subject records from database (activeOnly: true)."
+    },
+    {
+      "type": "log",
+      "text": "🌐 Loaded 4 class records from database (activeOnly: false)."
+    },
+    {
+      "type": "log",
+      "text": "🚀 Classes Directory successfully synced with 4 classes from database."
+    },
+    {
+      "type": "log",
+      "text": "🌐 Loaded 21 student records from database."
+    },
+    {
+      "type": "log",
+      "text": "🚀 Dashboard successfully synced with 21 students from database."
+    },
+    {
+      "type": "log",
+      "text": "🌐 Loaded 6 teacher records from database."
+    },
+    {
+      "type": "log",
+      "text": "🚀 Teacher Directory successfully synced with 6 teachers from database."
+    }
+  ]
+}

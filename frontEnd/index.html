@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EduManage — Modern School Management System Dashboard">
+
+  <title>EduManage — School Management System</title>
+
+  <link rel="stylesheet" href="style.css?v=3.6">
+</head>
+
+<body>
+
+  <!-- =====================================================
+       APP CONTAINER WITH GLASSMORPHISM SIDEBAR
+       ===================================================== -->
+  <div class="app">
+
+    <!-- ===================================================
+         SIDEBAR NAVIGATION
+         =================================================== -->
+    <aside class="sidebar" aria-label="Main Navigation">
+
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+        </div>
+        <div class="brand-text">
+          <strong>EduManage</strong>
+          <span>School Management</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="main-nav" aria-label="Primary Navigation">
+        <div class="nav-section-label">MAIN MENU</div>
+
+        <a href="#dashboardSection" class="nav-btn active" data-nav="overview">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </span>
+          <span class="nav-label">Overview</span>
+        </a>
+
+        <a href="#calendarSection" class="nav-btn" data-nav="calendar">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+          </span>
+          <span class="nav-label">Calendar</span>
+        </a>
+
+        <a href="#attendanceSection" class="nav-btn" data-nav="attendance">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+          </span>
+          <span class="nav-label">Attendance</span>
+        </a>
+
+        <a href="#achieversSection" class="nav-btn" data-nav="achievers">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          </span>
+          <span class="nav-label">Achievers</span>
+        </a>
+
+        <a href="#studentsSection" class="nav-btn" data-nav="students">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+          </span>
+          <span class="nav-label">Students</span>
+        </a>
+
+        <a href="#studentFormSection" class="nav-btn" data-nav="enrollment">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+          </span>
+          <span class="nav-label">Enroll Student</span>
+        </a>
+
+        <a href="#teachersSection" class="nav-btn" data-nav="teachers">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/><path d="M6 14h6"/><circle cx="18" cy="8" r="2"/><path d="M16 14a2 2 0 0 1 4 0"/></svg>
+          </span>
+          <span class="nav-label">Teachers</span>
+        </a>
+
+        <a href="#teacherFormSection" class="nav-btn" data-nav="hire-teacher">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+          </span>
+          <span class="nav-label">Hire Teacher</span>
+        </a>
+
+        <a href="#subjectsSection" class="nav-btn" data-nav="subjects">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/><path d="M6 14h10"/></svg>
+          </span>
+          <span class="nav-label">Subjects</span>
+        </a>
+
+        <a href="#subjectFormSection" class="nav-btn" data-nav="add-subject">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </span>
+          <span class="nav-label">Add Subject</span>
+        </a>
+
+        <a href="#classesSection" class="nav-btn" data-nav="classes">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+          </span>
+          <span class="nav-label">Classes</span>
+        </a>
+
+        <a href="#classFormSection" class="nav-btn" data-nav="add-class">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </span>
+          <span class="nav-label">Add Class</span>
+        </a>
+
+        <a href="#resultsSection" class="nav-btn" data-nav="results">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </span>
+          <span class="nav-label">Results &amp; Reports</span>
+        </a>
+
+        <div class="nav-section-label nav-section-secondary">COMMUNICATION</div>
+
+        <a href="#contactSection" class="nav-btn" data-nav="contact">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <span class="nav-label">Contact</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <a href="#contactSection" class="nav-btn" data-nav="settings">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          <span class="nav-label">Settings</span>
+        </a>
+
+        <div class="sidebar-user">
+          <div class="user-avatar" aria-hidden="true">HM</div>
+          <div class="user-info">
+            <strong>Administrator</strong>
+            <span>School Admin</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ===================================================
+         MAIN CONTENT WRAPPER
+         =================================================== -->
+    <main class="main-content">
+
+      <!-- =================================================
+           TOP APP BAR
+           ================================================= -->
+      <header class="top-header">
+        <div>
+          <span class="page-eyebrow">SCHOOL ADMINISTRATION</span>
+          <h1>Good morning, Administrator</h1>
+          <p>Here's what's happening at your school today.</p>
+        </div>
+
+        <div class="header-actions">
+          <div class="live-clock" id="schoolClock" aria-label="Official school time">
+            <span class="clock-dot" aria-hidden="true"></span>
+            <span class="clock-label">School Time:</span>
+            <time id="liveTime">--:--:-- GMT</time>
+          </div>
+
+          <button class="header-icon-btn" type="button" aria-label="Notifications">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="notification-dot" aria-hidden="true"></span>
+          </button>
+
+          <div class="header-avatar" aria-hidden="true">HM</div>
+        </div>
+      </header>
+
+      <!-- =================================================
+           DASHBOARD OVERVIEW SECTION
+           ================================================= -->
+      <section id="dashboardSection" class="dashboard-section">
+
+        <!-- Dynamic Summary Statistics Grid -->
+        <div class="stats-grid">
+
+          <article class="stat-card" id="statCardStudents">
+            <div class="stat-card-top">
+              <div class="stat-icon blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+              </div>
+              <span class="stat-trend positive">Active Roster</span>
+            </div>
+            <div class="stat-label">Total Students</div>
+            <div class="stat-value" id="dashTotalStudents">16</div>
+            <div class="stat-description" id="dashClassesCount">Enrolled across 3 classes</div>
+          </article>
+
+          <article class="stat-card" id="statCardAttendance">
+            <div class="stat-card-top">
+              <div class="stat-icon green" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+              </div>
+              <span class="stat-trend positive" id="dashAttendanceTrend">Live Today</span>
+            </div>
+            <div class="stat-label">Today's Attendance</div>
+            <div class="stat-value" id="dashAttendanceRate">81.3%</div>
+            <div class="stat-description">Check-in participation rate</div>
+          </article>
+
+          <article class="stat-card" id="statCardAchievers">
+            <div class="stat-card-top">
+              <div class="stat-icon purple" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+              </div>
+              <span class="stat-trend positive">GPA &ge; 3.7</span>
+            </div>
+            <div class="stat-label">Top Achievers</div>
+            <div class="stat-value" id="dashAchieversCount">10</div>
+            <div class="stat-description">High academic standing</div>
+          </article>
+
+          <article class="stat-card stat-card-interactive" id="statCardAcademicTerm" role="button" tabindex="0" title="Click to view full calendar & timetable">
+            <div class="stat-card-top">
+              <div class="stat-icon orange" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+              </div>
+              <span class="stat-trend neutral">Active Term &rarr;</span>
+            </div>
+            <div class="stat-label">Academic Term</div>
+            <div class="stat-value small" id="dashTermName">Term 1</div>
+            <div class="stat-description" id="dashTermRange">1 Sept — 18 Dec 2026</div>
+          </article>
+
+        </div>
+
+        <!-- 2-Column Dashboard Glass Panels -->
+        <div class="content-grid">
+
+          <!-- Attendance Overview Panel -->
+          <section class="glass-panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-eyebrow">TODAY'S ROLL CALL</span>
+                <h2>Attendance Overview</h2>
+              </div>
+              <a href="#attendanceSection" class="text-btn">View full roster &rarr;</a>
+            </div>
+
+            <div class="attendance-overview">
+              <div class="attendance-circle" id="dashAttendanceCircle" style="background: conic-gradient(var(--primary-600) 0% 81.3%, hsla(217, 30%, 80%, 0.25) 81.3% 100%);">
+                <div>
+                  <strong id="dashCirclePct">81.3%</strong>
+                  <span>Rate</span>
+                </div>
+              </div>
+
+              <div class="attendance-stats">
+                <div class="attendance-stat">
+                  <span class="attendance-status present" aria-hidden="true"></span>
+                  <div>
+                    <strong id="dashPresentCount">12</strong>
+                    <span>Present (<span id="dashPresentPct">75.0%</span>)</span>
+                  </div>
+                </div>
+
+                <div class="attendance-stat">
+                  <span class="attendance-status late" aria-hidden="true"></span>
+                  <div>
+                    <strong id="dashLateCount">2</strong>
+                    <span>Late (<span id="dashLatePct">12.5%</span>)</span>
+                  </div>
+                </div>
+
+                <div class="attendance-stat">
+                  <span class="attendance-status absent" aria-hidden="true"></span>
+                  <div>
+                    <strong id="dashAbsentCount">2</strong>
+                    <span>Absent (<span id="dashAbsentPct">12.5%</span>)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Upcoming Highlights Panel -->
+          <section class="glass-panel">
+            <div class="panel-header">
+              <div>
+                <span class="panel-eyebrow">SCHEDULE &amp; TIMETABLE</span>
+                <h2>Upcoming Highlights</h2>
+              </div>
+              <a href="#calendarSection" class="text-btn">Calendar &rarr;</a>
+            </div>
+
+            <div class="upcoming-list" id="dashUpcomingList">
+              <div class="upcoming-item" data-date="2026-09-01">
+                <div class="event-date">
+                  <strong>1</strong>
+                  <span>SEP</span>
+                </div>
+                <div class="event-info">
+                  <strong>Term 1 Resumption &amp; Orientation</strong>
+                  <span>Great Hall • 08:30 GMT</span>
+                </div>
+              </div>
+              <div class="upcoming-item" data-date="2026-09-21">
+                <div class="event-date">
+                  <strong>21</strong>
+                  <span>SEP</span>
+                </div>
+                <div class="event-info">
+                  <strong>Kwame Nkrumah Memorial Day</strong>
+                  <span>Campus-wide • All Day</span>
+                </div>
+              </div>
+              <div class="upcoming-item" data-date="2026-10-14">
+                <div class="event-date">
+                  <strong>14</strong>
+                  <span>OCT</span>
+                </div>
+                <div class="event-info">
+                  <strong>PTA General Academic Forum</strong>
+                  <span>School Auditorium • 14:00 GMT</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </section>
+
+      <!-- =================================================
+           CALENDAR & ACADEMIC SCHEDULE MODULE
+           ================================================= -->
+      <section id="calendarSection" class="calendar-section" aria-labelledby="calendarTitle">
+        <div class="calendar-card">
+
+          <!-- Calendar Header & Term Progress Widget -->
+          <div class="calendar-header">
+            <div>
+              <span class="calendar-eyebrow">ACADEMIC SCHEDULE</span>
+              <h2 id="calendarTitle">School Calendar &amp; Timetable</h2>
+              <p>Track terms, exams, school events, statutory holidays, and deadlines.</p>
+            </div>
+
+            <div class="cal-term-widget" id="calTermWidget">
+              <div class="cal-term-top">
+                <span class="cal-status-pill active" id="calTermStatusBadge">Active</span>
+                <strong id="calTermName">Term 1 (Harmattan Term)</strong>
+                <span id="calTermProgressPct">6% Complete</span>
+              </div>
+              <div class="cal-progress-track" aria-hidden="true">
+                <div class="cal-progress-fill" id="calTermProgressBarFill" style="width: 6%;"></div>
+              </div>
+              <div class="cal-term-meta">
+                <span id="calTermRange">1 Sept — 18 Dec 2026</span>
+                <span id="calTermDaysLeft">102 days left</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Filter Pills Bar -->
+          <div class="cal-toolbar">
+            <div class="cal-filter-pills" id="calFilterPills" role="toolbar" aria-label="Filter calendar by category">
+              <button type="button" class="cal-filter-pill active" data-filter="all" aria-pressed="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                <span>All</span>
+              </button>
+              <button type="button" class="cal-filter-pill" data-filter="term" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+                <span>Academic Term</span>
+              </button>
+              <button type="button" class="cal-filter-pill" data-filter="event" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m12 14 1 2 2 .5-1.5 1.5.5 2-2-1-2 1 .5-2L9 16.5l2-.5z"/></svg>
+                <span>Events</span>
+              </button>
+              <button type="button" class="cal-filter-pill" data-filter="exam" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                <span>Exams</span>
+              </button>
+              <button type="button" class="cal-filter-pill" data-filter="holiday" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <span>Holidays</span>
+              </button>
+              <button type="button" class="cal-filter-pill" data-filter="deadline" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
+                <span>Deadlines</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Calendar 2-Column Layout (Grid + Sidebar) -->
+          <div class="calendar-layout-grid">
+
+            <!-- Month Grid Pane -->
+            <div class="cal-grid-pane">
+              <div class="cal-nav-header">
+                <div class="cal-nav-controls">
+                  <button type="button" id="calPrevMonthBtn" class="cal-nav-btn" aria-label="Previous Month">&larr;</button>
+                  <h3 id="calMonthYearTitle" class="cal-month-title">September 2026</h3>
+                  <button type="button" id="calNextMonthBtn" class="cal-nav-btn" aria-label="Next Month">&rarr;</button>
+                </div>
+
+                <button type="button" id="calTodayBtn" class="cal-today-btn">Today</button>
+              </div>
+
+              <div class="cal-weekdays-row" aria-hidden="true">
+                <span>Sun</span>
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+              </div>
+
+              <div class="cal-grid-days" id="calGridDays" role="grid" aria-label="Monthly Calendar Days">
+                <!-- Rendered dynamically via JavaScript -->
+              </div>
+
+              <div class="cal-legend" aria-label="Calendar category legend">
+                <span class="cal-legend-item"><span class="cal-dot cal-dot-term"></span> Term</span>
+                <span class="cal-legend-item"><span class="cal-dot cal-dot-event"></span> Event</span>
+                <span class="cal-legend-item"><span class="cal-dot cal-dot-exam"></span> Exam</span>
+                <span class="cal-legend-item"><span class="cal-dot cal-dot-holiday"></span> Holiday</span>
+                <span class="cal-legend-item"><span class="cal-dot cal-dot-deadline"></span> Deadline</span>
+              </div>
+            </div>
+
+            <!-- Agenda Sidebar Pane -->
+            <aside class="cal-sidebar-pane" aria-labelledby="calSelectedDateHeader">
+              <div class="cal-sidebar-section">
+                <div class="cal-sidebar-header">
+                  <span class="cal-sidebar-eyebrow">SCHEDULED ACTIVITIES</span>
+                  <h3 id="calSelectedDateHeader" class="cal-sidebar-date">Monday, Sep 7, 2026</h3>
+                </div>
+
+                <div id="calAgendaList" class="cal-agenda-list" aria-live="polite">
+                  <!-- Rendered dynamically via JavaScript -->
+                </div>
+              </div>
+
+              <div class="cal-upcoming-box">
+                <div class="cal-upcoming-header">
+                  <span class="cal-upcoming-bolt" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  </span>
+                  <h4>Upcoming Next</h4>
+                </div>
+                <ul id="calUpcomingList" class="cal-upcoming-list" aria-label="Next upcoming items">
+                  <!-- Rendered dynamically via JavaScript -->
+                </ul>
+              </div>
+            </aside>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================
+           ATTENDANCE MANAGEMENT SECTION (DYNAMIC ROSTER)
+           ================================================= -->
+      <section id="attendanceSection" class="attendance-section" aria-labelledby="attendanceTitle">
+        <div class="attendance-card">
+          
+          <div class="attendance-header">
+            <div>
+              <span class="attendance-eyebrow">ATTENDANCE DASHBOARD</span>
+              <h2 id="attendanceTitle">Daily Roll Call &amp; Roster</h2>
+              <p class="attendance-subtitle">Mark student check-ins and track real-time class participation.</p>
+            </div>
+
+            <div class="attendance-clock-badge" id="attendanceClockBadge" aria-label="Official Attendance School Time">
+              <span class="badge-dot" aria-hidden="true"></span>
+              <span class="clock-title">Accra Time:</span>
+              <time id="attendanceAccraTime" class="clock-live">--:--:-- GMT</time>
+              <span class="clock-sep" aria-hidden="true">•</span>
+              <span id="attendanceDateFull">Monday, 7 Sept 2026</span>
+            </div>
+          </div>
+
+          <!-- Attendance Stats Summary Bar -->
+          <div class="analytics-row" aria-label="Attendance statistics summary">
+            <div class="analytics-col is-present">
+              <div class="analytics-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon status-svg-present"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <div class="analytics-body">
+                <span class="analytics-label">Present</span>
+                <div class="analytics-values">
+                  <strong id="metricPresentCount" class="analytics-count">12</strong>
+                  <span id="metricPresentPct" class="analytics-pct">75.0%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-col is-late">
+              <div class="analytics-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon status-svg-late"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="analytics-body">
+                <span class="analytics-label">Late</span>
+                <div class="analytics-values">
+                  <strong id="metricLateCount" class="analytics-count">2</strong>
+                  <span id="metricLatePct" class="analytics-pct">12.5%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-col is-absent">
+              <div class="analytics-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon status-svg-absent"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+              </div>
+              <div class="analytics-body">
+                <span class="analytics-label">Absent</span>
+                <div class="analytics-values">
+                  <strong id="metricAbsentCount" class="analytics-count">2</strong>
+                  <span id="metricAbsentPct" class="analytics-pct">12.5%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-col is-rate">
+              <div class="analytics-rate-body">
+                <div class="rate-header-row">
+                  <span class="analytics-label">Overall Rate</span>
+                  <span id="metricStatusTag" class="status-indicator-tag warning">On Track</span>
+                </div>
+                <div class="rate-number-row">
+                  <strong id="metricAttendanceRate" class="rate-primary-num">81.3%</strong>
+                  <span class="rate-target-label">Target: 90%</span>
+                </div>
+                <div class="mini-progress-track" aria-hidden="true">
+                  <div class="mini-progress-fill" id="metricProgressFill" style="width: 81.3%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search & Filter Controls Toolbar -->
+          <div class="roster-toolbar">
+            <div class="toolbar-filters">
+              <div class="search-input-wrap">
+                <span class="search-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="search" id="rosterSearchInput" placeholder="Search by student name or ID..." aria-label="Search student roster">
+              </div>
+
+              <div class="filter-select-wrap">
+                <select id="rosterClassFilter" aria-label="Filter by Class">
+                  <option value="All">All Classes</option>
+                  <option value="Form 1">Form 1</option>
+                  <option value="Form 2">Form 2</option>
+                  <option value="Form 3">Form 3</option>
+                </select>
+              </div>
+
+              <div class="filter-select-wrap">
+                <select id="rosterStatusFilter" aria-label="Filter by Status">
+                  <option value="All">All Statuses</option>
+                  <option value="Present">Present</option>
+                  <option value="Late">Late</option>
+                  <option value="Absent">Absent</option>
+                  <option value="Unmarked">Unmarked</option>
+                </select>
+              </div>
+
+              <div class="filter-select-wrap">
+                <select id="rosterGenderFilter" aria-label="Filter by Gender">
+                  <option value="All">All Genders</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="toolbar-actions">
+              <button type="button" id="markAllPresentBtn" class="btn-action primary" title="Mark all filtered students as Present">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span>Mark All Present</span>
+              </button>
+              <button type="button" id="resetAttendanceBtn" class="btn-action secondary" title="Reset filtered students to Unmarked">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Table-Style Student Roster -->
+          <div class="table-responsive">
+            <table class="roster-table" id="rosterTable">
+              <thead>
+                <tr>
+                  <th scope="col" class="th-student">Student</th>
+                  <th scope="col" class="th-class">Class</th>
+                  <th scope="col" class="th-status">Status</th>
+                  <th scope="col" class="th-time">Check-in Time</th>
+                  <th scope="col" class="th-control">Quick Mark</th>
+                  <th scope="col" class="th-action">Profile</th>
+                </tr>
+              </thead>
+              <tbody id="rosterTableBody" aria-live="polite">
+                <tr data-student-id="1">
+                  <td>
+                    <div class="roster-student-cell">
+                      <div class="roster-avatar">AM</div>
+                      <div>
+                        <div class="roster-student-name">Ama Mensah</div>
+                        <div class="roster-student-id">#EDU-0001</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="roster-class-badge">Form 1</span></td>
+                  <td><span class="status-badge-pill status-present"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present</span></td>
+                  <td><span class="roster-time">08:05 GMT</span></td>
+                  <td>
+                    <div class="segmented-status-control" role="group" aria-label="Mark attendance for Ama Mensah">
+                      <button type="button" class="btn-ctrl btn-present active" data-action="present" aria-pressed="true" title="Mark Present">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present
+                      </button>
+                      <button type="button" class="btn-ctrl btn-late" data-action="late" aria-pressed="false" title="Mark Late">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late
+                      </button>
+                      <button type="button" class="btn-ctrl btn-absent" data-action="absent" aria-pressed="false" title="Mark Absent">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Absent
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <button type="button" class="btn-roster-view" data-action="view-modal">
+                      <span>View</span>
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr data-student-id="2">
+                  <td>
+                    <div class="roster-student-cell">
+                      <div class="roster-avatar">HM</div>
+                      <div>
+                        <div class="roster-student-name">Henri Miessan</div>
+                        <div class="roster-student-id">#EDU-0002</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="roster-class-badge">Form 3</span></td>
+                  <td><span class="status-badge-pill status-present"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present</span></td>
+                  <td><span class="roster-time">07:55 GMT</span></td>
+                  <td>
+                    <div class="segmented-status-control" role="group" aria-label="Mark attendance for Henri Miessan">
+                      <button type="button" class="btn-ctrl btn-present active" data-action="present" aria-pressed="true" title="Mark Present">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present
+                      </button>
+                      <button type="button" class="btn-ctrl btn-late" data-action="late" aria-pressed="false" title="Mark Late">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late
+                      </button>
+                      <button type="button" class="btn-ctrl btn-absent" data-action="absent" aria-pressed="false" title="Mark Absent">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Absent
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <button type="button" class="btn-roster-view" data-action="view-modal">
+                      <span>View</span>
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr data-student-id="3">
+                  <td>
+                    <div class="roster-student-cell">
+                      <div class="roster-avatar">DO</div>
+                      <div>
+                        <div class="roster-student-name">Daniel Owusu</div>
+                        <div class="roster-student-id">#EDU-0003</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="roster-class-badge">Form 2</span></td>
+                  <td><span class="status-badge-pill status-late"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late</span></td>
+                  <td><span class="roster-time">08:35 GMT</span></td>
+                  <td>
+                    <div class="segmented-status-control" role="group" aria-label="Mark attendance for Daniel Owusu">
+                      <button type="button" class="btn-ctrl btn-present" data-action="present" aria-pressed="false" title="Mark Present">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present
+                      </button>
+                      <button type="button" class="btn-ctrl btn-late active" data-action="late" aria-pressed="true" title="Mark Late">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late
+                      </button>
+                      <button type="button" class="btn-ctrl btn-absent" data-action="absent" aria-pressed="false" title="Mark Absent">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Absent
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <button type="button" class="btn-roster-view" data-action="view-modal">
+                      <span>View</span>
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr data-student-id="4">
+                  <td>
+                    <div class="roster-student-cell">
+                      <div class="roster-avatar">MF</div>
+                      <div>
+                        <div class="roster-student-name">Madam Fausty</div>
+                        <div class="roster-student-id">#EDU-0004</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="roster-class-badge">Form 3</span></td>
+                  <td><span class="status-badge-pill status-present"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present</span></td>
+                  <td><span class="roster-time">08:12 GMT</span></td>
+                  <td>
+                    <div class="segmented-status-control" role="group" aria-label="Mark attendance for Madam Fausty">
+                      <button type="button" class="btn-ctrl btn-present active" data-action="present" aria-pressed="true" title="Mark Present">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present
+                      </button>
+                      <button type="button" class="btn-ctrl btn-late" data-action="late" aria-pressed="false" title="Mark Late">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late
+                      </button>
+                      <button type="button" class="btn-ctrl btn-absent" data-action="absent" aria-pressed="false" title="Mark Absent">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Absent
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <button type="button" class="btn-roster-view" data-action="view-modal">
+                      <span>View</span>
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr data-student-id="5">
+                  <td>
+                    <div class="roster-student-cell">
+                      <div class="roster-avatar">KM</div>
+                      <div>
+                        <div class="roster-student-name">Kwame Mensah</div>
+                        <div class="roster-student-id">#EDU-0005</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="roster-class-badge">Form 1</span></td>
+                  <td><span class="status-badge-pill status-absent"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Absent</span></td>
+                  <td><span class="roster-time empty">—</span></td>
+                  <td>
+                    <div class="segmented-status-control" role="group" aria-label="Mark attendance for Kwame Mensah">
+                      <button type="button" class="btn-ctrl btn-present" data-action="present" aria-pressed="false" title="Mark Present">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present
+                      </button>
+                      <button type="button" class="btn-ctrl btn-late" data-action="late" aria-pressed="false" title="Mark Late">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late
+                      </button>
+                      <button type="button" class="btn-ctrl btn-absent active" data-action="absent" aria-pressed="true" title="Mark Absent">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Absent
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <button type="button" class="btn-roster-view" data-action="view-modal">
+                      <span>View</span>
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr data-student-id="6">
+                  <td>
+                    <div class="roster-student-cell">
+                      <div class="roster-avatar">AA</div>
+                      <div>
+                        <div class="roster-student-name">Abena Asante</div>
+                        <div class="roster-student-id">#EDU-0006</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="roster-class-badge">Form 2</span></td>
+                  <td><span class="status-badge-pill status-present"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present</span></td>
+                  <td><span class="roster-time">07:58 GMT</span></td>
+                  <td>
+                    <div class="segmented-status-control" role="group" aria-label="Mark attendance for Abena Asante">
+                      <button type="button" class="btn-ctrl btn-present active" data-action="present" aria-pressed="true" title="Mark Present">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Present
+                      </button>
+                      <button type="button" class="btn-ctrl btn-late" data-action="late" aria-pressed="false" title="Mark Late">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Late
+                      </button>
+                      <button type="button" class="btn-ctrl btn-absent" data-action="absent" aria-pressed="false" title="Mark Absent">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Absent
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <button type="button" class="btn-roster-view" data-action="view-modal">
+                      <span>View</span>
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="roster-pagination" id="rosterPagination" aria-label="Roster Pagination">
+            <div class="pagination-info" id="paginationInfo">
+              Showing <strong>1–6</strong> of <strong>16</strong> students
+            </div>
+
+            <div class="pagination-controls">
+              <button type="button" id="prevPageBtn" class="pagination-btn" disabled aria-label="Previous page">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m15 18-6-6 6-6"/></svg>
+                <span>Previous</span>
+              </button>
+              <div class="page-numbers-wrap" id="pageNumbersWrap">
+                <button type="button" class="page-num-btn active" data-page="1" aria-label="Go to page 1" aria-current="page">1</button>
+                <button type="button" class="page-num-btn" data-page="2" aria-label="Go to page 2" aria-current="false">2</button>
+                <button type="button" class="page-num-btn" data-page="3" aria-label="Go to page 3" aria-current="false">3</button>
+              </div>
+              <button type="button" id="nextPageBtn" class="pagination-btn" aria-label="Next page">
+                <span>Next</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+
+            <div class="pagination-size">
+              <label for="pageSizeSelect">Show:</label>
+              <select id="pageSizeSelect" aria-label="Students per page">
+                <option value="6" selected>6 / page</option>
+                <option value="10">10 / page</option>
+                <option value="16">All (16)</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- =================================================
+           TOP ACHIEVERS SECTION
+           ================================================= -->
+      <section id="achieversSection" class="achievers-section" aria-labelledby="achieversTitle">
+        <div class="achievers-card">
+          <div class="achievers-header">
+            <div>
+              <div class="achievers-title-wrap">
+                <span class="achievers-trophy" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                </span>
+                <h2 id="achieversTitle">Top Achievers</h2>
+              </div>
+              <p class="achievers-subtitle">Highest GPA students this term</p>
+            </div>
+
+            <button id="viewAllAchieversBtn" type="button" class="view-all-btn">
+              <span>View all students</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <div id="achieversList" class="achievers-list" aria-label="Top 3 students by GPA">
+            <div class="achiever-row" data-id="6" role="button" tabindex="0" aria-label="View profile of top achiever Abena Asante">
+              <span class="achiever-medal" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#F59E0B" stroke="#D97706" stroke-width="1.5" class="svg-icon medal-gold"><circle cx="12" cy="14" r="7"/><path d="M8 2h8l-2 6H10L8 2z" fill="#D97706"/><text x="12" y="17" font-size="9" font-weight="bold" fill="#78350F" text-anchor="middle" font-family="sans-serif">1</text></svg>
+              </span>
+              <div class="achiever-details">
+                <p class="achiever-name">Abena Asante</p>
+                <span class="achiever-meta">Form 2 • Science</span>
+              </div>
+              <span class="achiever-gpa-badge">3.95 GPA</span>
+            </div>
+
+            <div class="achiever-row" data-id="2" role="button" tabindex="0" aria-label="View profile of top achiever Henri Miessan">
+              <span class="achiever-medal" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#CBD5E1" stroke="#64748B" stroke-width="1.5" class="svg-icon medal-silver"><circle cx="12" cy="14" r="7"/><path d="M8 2h8l-2 6H10L8 2z" fill="#64748B"/><text x="12" y="17" font-size="9" font-weight="bold" fill="#1E293B" text-anchor="middle" font-family="sans-serif">2</text></svg>
+              </span>
+              <div class="achiever-details">
+                <p class="achiever-name">Henri Miessan</p>
+                <span class="achiever-meta">Form 3 • Science</span>
+              </div>
+              <span class="achiever-gpa-badge">3.92 GPA</span>
+            </div>
+
+            <div class="achiever-row" data-id="13" role="button" tabindex="0" aria-label="View profile of top achiever Kofi Addo">
+              <span class="achiever-medal" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#FDBA74" stroke="#C2410C" stroke-width="1.5" class="svg-icon medal-bronze"><circle cx="12" cy="14" r="7"/><path d="M8 2h8l-2 6H10L8 2z" fill="#C2410C"/><text x="12" y="17" font-size="9" font-weight="bold" fill="#7C2D12" text-anchor="middle" font-family="sans-serif">3</text></svg>
+              </span>
+              <div class="achiever-details">
+                <p class="achiever-name">Kofi Addo</p>
+                <span class="achiever-meta">Form 3 • Science</span>
+              </div>
+              <span class="achiever-gpa-badge">3.9 GPA</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================
+           STUDENT DIRECTORY SECTION
+           ================================================= -->
+      <section id="studentsSection" class="students-section" aria-labelledby="studentsTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">STUDENT DIRECTORY</p>
+            <h2 id="studentsTitle">Enrolled Students</h2>
+            <p>Click the button to show or hide the full student directory cards.</p>
+          </div>
+
+          <button id="showStudentsBtn" type="button" aria-controls="studentList" aria-expanded="false">
+            Show Students
+          </button>
+        </div>
+
+        <div id="studentList" class="student-list" aria-live="polite">
+          <!-- Rendered dynamically via JavaScript -->
+        </div>
+      </section>
+
+      <!-- =================================================
+           STUDENT REGISTRATION FORM SECTION
+           ================================================= -->
+      <section id="studentFormSection" class="student-form-section" aria-labelledby="studentFormTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">ENROLLMENT &amp; ADMISSIONS</p>
+            <h2 id="studentFormTitle">Register New Student</h2>
+            <p>Complete the form below to enroll a student and generate their standardized record.</p>
+          </div>
+        </div>
+
+        <form id="studentRegistrationForm" class="student-form" novalidate>
+          
+          <!-- 1. PERSONAL INFORMATION -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">01</span> Personal Information</legend>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="studentName">Full Name *</label>
+                <input type="text" id="studentName" name="name" required placeholder="e.g. Ama Mensah" autocomplete="name">
+                <span class="field-error" id="errorStudentName" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="studentGender">Gender *</label>
+                <select id="studentGender" name="gender" required>
+                  <option value="" disabled selected>Select gender</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" id="errorStudentGender" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="studentDob">Date of Birth *</label>
+                <input type="date" id="studentDob" name="dateOfBirth" max="2026-12-31" required>
+                <span class="field-error" id="errorStudentDob" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="studentEmail">Email Address *</label>
+                <input type="email" id="studentEmail" name="email" required placeholder="e.g. ama.mensah@edumanage.edu" autocomplete="email">
+                <span class="field-error" id="errorStudentEmail" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="studentPhone">Phone Number *</label>
+                <input type="tel" id="studentPhone" name="phone" required placeholder="e.g. +233 24 123 4567" autocomplete="tel">
+                <span class="field-error" id="errorStudentPhone" aria-live="polite"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 2. ACADEMIC DETAILS -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">02</span> Academic Details</legend>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="studentClass">Class *</label>
+                <select id="studentClass" name="class" required>
+                  <option value="" disabled selected>Select class</option>
+                  <option value="Form 1">Form 1</option>
+                  <option value="Form 2">Form 2</option>
+                  <option value="Form 3">Form 3</option>
+                </select>
+                <span class="field-error" id="errorStudentClass" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="yearOfEnrollment">Year of Enrollment *</label>
+                <input type="number" id="yearOfEnrollment" name="yearOfEnrollment" min="2020" max="2030" value="2024" required>
+                <span class="field-error" id="errorYearOfEnrollment" aria-live="polite"></span>
+              </div>
+
+              <!-- Subjects (Array Selection) -->
+              <div class="form-group full-width">
+                <label>Enrolled Subjects (Check all that apply) *</label>
+                <div class="checkbox-group" id="studentSubjectsContainer" role="group" aria-label="Enrolled Subjects">
+                  <!-- Dynamically populated from backend database -->
+                </div>
+                <span class="field-error" id="errorSubjects" aria-live="polite"></span>
+            </div>
+          </fieldset>
+
+          <!-- 3. FINANCIAL & ENROLLMENT STATUS -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">03</span> Financial &amp; Fees Status</legend>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="feesStatus">Initial Fees Status *</label>
+                <select id="feesStatus" name="feesStatus" required>
+                  <option value="Paid">Paid</option>
+                  <option value="Pending" selected>Pending</option>
+                  <option value="Unpaid">Unpaid</option>
+                  <option value="Partial">Partial</option>
+                </select>
+                <span class="field-error" id="errorFeesStatus" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label>Attendance &amp; Daily Status</label>
+                <div class="form-hint" style="font-size: 0.85rem; color: var(--text-muted, #718096); padding-top: 0.5rem; line-height: 1.4;">
+                  ✨ Automatically initialized: <strong>100% attendance rate</strong> and <strong>Unmarked</strong> daily status until recorded in class rosters.
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 4. GUARDIAN INFORMATION -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">04</span> Guardian Information</legend>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="guardianName">Guardian Full Name *</label>
+                <input type="text" id="guardianName" name="guardianName" required placeholder="e.g. Mr. Kofi Mensah">
+                <span class="field-error" id="errorGuardianName" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="guardianRelation">Relationship *</label>
+                <select id="guardianRelation" name="guardianRelation" required>
+                  <option value="Father" selected>Father</option>
+                  <option value="Mother">Mother</option>
+                  <option value="Guardian">Guardian</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" id="errorGuardianRelation" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="guardianPhone">Guardian Phone Number *</label>
+                <input type="tel" id="guardianPhone" name="guardianPhone" required placeholder="e.g. +233 20 987 6543">
+                <span class="field-error" id="errorGuardianPhone" aria-live="polite"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- FORM ACTIONS -->
+          <div class="form-actions">
+            <button type="submit" id="saveStudentBtn" class="submit-btn">
+              <span>➕ Register Student</span>
+            </button>
+            <button type="reset" class="btn-reset">Reset Form</button>
+            <p id="studentFormFeedback" class="form-feedback" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <!-- =================================================
+           TEACHER DIRECTORY SECTION
+           ================================================= -->
+      <section id="teachersSection" class="teachers-section" aria-labelledby="teachersTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">FACULTY &amp; STAFF</p>
+            <h2 id="teachersTitle">Teacher Directory</h2>
+            <p>Manage and view academic instructors, departments, and assigned subject allocations.</p>
+          </div>
+
+          <div class="roster-header-stats">
+            <div class="mini-stat-badge">
+              <span>Total Staff:</span>
+              <strong id="totalTeachersCount">0</strong>
+            </div>
+            <div class="mini-stat-badge">
+              <span>Departments:</span>
+              <strong id="totalDepartmentsCount">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="roster-toolbar">
+          <div class="search-box">
+            <input type="search" id="teacherSearchInput" placeholder="Search teacher by name, staff ID, or subject..." aria-label="Search teachers">
+          </div>
+          <div class="filter-group">
+            <select id="teacherClassFilter" aria-label="Filter by assigned class">
+              <option value="All">All Classes</option>
+            </select>
+            <select id="teacherDeptFilter" aria-label="Filter by department">
+              <option value="All">All Departments</option>
+              <option value="Science & Mathematics">Science &amp; Mathematics</option>
+              <option value="Languages">Languages</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Humanities & Social Sciences">Humanities &amp; Social Sciences</option>
+              <option value="Business & Accounting">Business &amp; Accounting</option>
+              <option value="Arts & Design">Arts &amp; Design</option>
+              <option value="Physical Education">Physical Education</option>
+            </select>
+            <select id="teacherStatusFilter" aria-label="Filter by employment status">
+              <option value="All">All Statuses</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="On Leave">On Leave</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="teacherList" class="teachers-grid" aria-live="polite">
+          <!-- Rendered dynamically via JavaScript -->
+        </div>
+      </section>
+
+      <!-- =================================================
+           TEACHER REGISTRATION ("HIRE TEACHER") SECTION
+           ================================================= -->
+      <section id="teacherFormSection" class="student-form-section" aria-labelledby="teacherFormTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">STAFF ONBOARDING</p>
+            <h2 id="teacherFormTitle">Hire New Teacher</h2>
+            <p>Complete the form below to register and appoint an academic instructor to the school registry.</p>
+          </div>
+        </div>
+
+        <form id="teacherRegistrationForm" class="student-form" novalidate>
+          
+          <!-- 1. PERSONAL & CONTACT INFORMATION -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">01</span> Personal &amp; Contact Information</legend>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="teacherFirstName">First Name *</label>
+                <input type="text" id="teacherFirstName" name="firstName" required placeholder="e.g. Kwame" autocomplete="given-name" aria-describedby="errorTeacherFirstName">
+                <span class="field-error" id="errorTeacherFirstName" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherLastName">Last Name *</label>
+                <input type="text" id="teacherLastName" name="lastName" required placeholder="e.g. Asante" autocomplete="family-name" aria-describedby="errorTeacherLastName">
+                <span class="field-error" id="errorTeacherLastName" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherGender">Gender *</label>
+                <select id="teacherGender" name="gender" required aria-describedby="errorTeacherGender">
+                  <option value="" disabled selected>Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" id="errorTeacherGender" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherDob">Date of Birth *</label>
+                <input type="date" id="teacherDob" name="dateOfBirth" required aria-describedby="errorTeacherDob">
+                <span class="field-error" id="errorTeacherDob" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherHireDate">Hire Date *</label>
+                <input type="date" id="teacherHireDate" name="hireDate" required aria-describedby="errorTeacherHireDate">
+                <span class="field-error" id="errorTeacherHireDate" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherEmail">Staff Email Address *</label>
+                <input type="email" id="teacherEmail" name="email" required placeholder="e.g. kwame.asante@edumanage.edu" autocomplete="email" aria-describedby="errorTeacherEmail">
+                <span class="field-error" id="errorTeacherEmail" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherPhone">Contact Phone Number *</label>
+                <input type="tel" id="teacherPhone" name="phone" required placeholder="e.g. +233 24 456 7890" autocomplete="tel" aria-describedby="errorTeacherPhone">
+                <span class="field-error" id="errorTeacherPhone" role="alert" aria-live="polite"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 2. ACADEMIC SPECIALIZATION & DEPARTMENT -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">02</span> Academic Specialization &amp; Role</legend>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="teacherDepartment">Department *</label>
+                <select id="teacherDepartment" name="department" required aria-describedby="errorTeacherDepartment">
+                  <option value="" disabled selected>Select department</option>
+                  <option value="Science & Mathematics">Science &amp; Mathematics</option>
+                  <option value="Languages">Languages</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Humanities & Social Sciences">Humanities &amp; Social Sciences</option>
+                  <option value="Business & Accounting">Business &amp; Accounting</option>
+                  <option value="Arts & Design">Arts &amp; Design</option>
+                  <option value="Physical Education">Physical Education</option>
+                </select>
+                <span class="field-error" id="errorTeacherDepartment" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherQualification">Highest Qualification *</label>
+                <input type="text" id="teacherQualification" name="qualification" required placeholder="e.g. B.Ed. Mathematics, M.Sc. Physics" aria-describedby="errorTeacherQualification">
+                <span class="field-error" id="errorTeacherQualification" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="teacherStatus">Employment Status *</label>
+                <select id="teacherStatus" name="employmentStatus" required aria-describedby="errorTeacherStatus">
+                  <option value="Full-time" selected>Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="On Leave">On Leave</option>
+                </select>
+                <span class="field-error" id="errorTeacherStatus" role="alert" aria-live="polite"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 3. ASSIGNED TEACHING SUBJECTS -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">03</span> Assigned Teaching Subjects</legend>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Select Teaching Subjects (Check all that apply) *</label>
+                <div class="checkbox-group" id="teacherSubjectsContainer" role="group" aria-label="Teaching Subjects" aria-describedby="errorTeacherSubjects">
+                  <!-- Dynamically populated from backend database -->
+                </div>
+                <span class="field-error" id="errorTeacherSubjects" role="alert" aria-live="polite"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- 4. ASSIGNED CLASSES / CLASS ALLOCATIONS -->
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">04</span> Assigned Classes / Class Allocations</legend>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Select Assigned Classes (Check all that apply) *</label>
+                <div class="checkbox-group" id="teacherClassesContainer" role="group" aria-label="Assigned Classes" aria-describedby="errorTeacherClasses">
+                  <!-- Dynamically populated from backend database -->
+                </div>
+                <span class="field-error" id="errorTeacherClasses" role="alert" aria-live="polite"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- FORM ACTIONS -->
+          <div class="form-actions">
+            <button type="submit" id="saveTeacherBtn" class="submit-btn">
+              <span>➕ Register &amp; Hire Teacher</span>
+            </button>
+            <button type="reset" class="btn-reset">Reset Form</button>
+            <p id="teacherFormFeedback" class="form-feedback" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <!-- =================================================
+           SUBJECTS & COURSES DIRECTORY SECTION
+           ================================================= -->
+      <section id="subjectsSection" class="teachers-section" aria-labelledby="subjectsTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">ACADEMIC CURRICULUM</p>
+            <h2 id="subjectsTitle">Courses &amp; Subjects</h2>
+            <p>Manage curriculum offerings, departments, course codes, and enrollment statuses.</p>
+          </div>
+
+          <div class="roster-header-stats">
+            <div class="mini-stat-badge">
+              <span>Total Courses:</span>
+              <strong id="totalSubjectsCount">0</strong>
+            </div>
+            <div class="mini-stat-badge">
+              <span>Active Offerings:</span>
+              <strong id="activeSubjectsCount">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="roster-toolbar">
+          <div class="search-box">
+            <input type="search" id="subjectSearchInput" placeholder="Search course by name, code, or department..." aria-label="Search subjects">
+          </div>
+          <div class="filter-group">
+            <select id="subjectDeptFilter" aria-label="Filter by department">
+              <option value="All">All Departments</option>
+              <option value="Mathematics & Computing">Mathematics &amp; Computing</option>
+              <option value="Natural Sciences">Natural Sciences</option>
+              <option value="Languages">Languages</option>
+              <option value="Humanities & Social Sciences">Humanities &amp; Social Sciences</option>
+              <option value="Science & Mathematics">Science &amp; Mathematics</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Business & Accounting">Business &amp; Accounting</option>
+              <option value="Arts & Design">Arts &amp; Design</option>
+              <option value="Physical Education">Physical Education</option>
+            </select>
+            <select id="subjectStatusFilter" aria-label="Filter by offering status">
+              <option value="All">All Statuses</option>
+              <option value="Active">Active Only</option>
+              <option value="Inactive">Archived / Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="subjectList" class="subjects-grid" aria-live="polite">
+          <!-- Rendered dynamically via JavaScript -->
+        </div>
+      </section>
+
+      <!-- =================================================
+           ADD / CREATE SUBJECT SECTION
+           ================================================= -->
+      <section id="subjectFormSection" class="student-form-section" aria-labelledby="subjectFormTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">CURRICULUM MANAGEMENT</p>
+            <h2 id="subjectFormTitle">Create New Subject / Course</h2>
+            <p>Define a new academic course, assign its department and code, and publish it to the student registry.</p>
+          </div>
+        </div>
+
+        <form id="subjectCreationForm" class="student-form" novalidate>
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">01</span> Course Information</legend>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="subjectTitle">Subject Title / Course Name *</label>
+                <input type="text" id="subjectTitle" name="name" required placeholder="e.g. Advanced Mathematics" autocomplete="off" aria-describedby="errorSubjectTitle">
+                <span class="field-error" id="errorSubjectTitle" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="subjectCode">Course Code *</label>
+                <input type="text" id="subjectCode" name="code" required placeholder="e.g. MTH-101" autocomplete="off" aria-describedby="errorSubjectCode">
+                <span class="field-error" id="errorSubjectCode" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="subjectDepartment">Academic Department *</label>
+                <select id="subjectDepartment" name="department" required aria-describedby="errorSubjectDepartment">
+                  <option value="" disabled selected>Select academic department</option>
+                  <option value="Mathematics & Computing">Mathematics &amp; Computing</option>
+                  <option value="Natural Sciences">Natural Sciences</option>
+                  <option value="Languages">Languages</option>
+                  <option value="Humanities & Social Sciences">Humanities &amp; Social Sciences</option>
+                  <option value="Science & Mathematics">Science &amp; Mathematics</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Business & Accounting">Business &amp; Accounting</option>
+                  <option value="Arts & Design">Arts &amp; Design</option>
+                  <option value="Physical Education">Physical Education</option>
+                </select>
+                <span class="field-error" id="errorSubjectDepartment" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="subjectDescription">Description &amp; Syllabus Overview</label>
+                <textarea id="subjectDescription" name="description" rows="3" placeholder="Enter course description, learning objectives, or curriculum details..."></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label class="checkbox-item" style="font-weight: 600;">
+                  <input type="checkbox" id="subjectActive" name="active" checked>
+                  <span>Active &amp; Available for Student Enrollment</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- FORM ACTIONS -->
+          <div class="form-actions">
+            <button type="submit" id="saveSubjectBtn" class="submit-btn">
+              <span>➕ Create &amp; Add Subject</span>
+            </button>
+            <button type="reset" class="btn-reset">Reset Form</button>
+            <p id="subjectFormFeedback" class="form-feedback" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <!-- =================================================
+           CLASSES DIRECTORY SECTION
+           ================================================= -->
+      <section id="classesSection" class="teachers-section" aria-labelledby="classesTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">ACADEMIC STRUCTURE</p>
+            <h2 id="classesTitle">School Classes &amp; Rosters</h2>
+            <p>Manage class levels, view enrolled student rosters, assign students, or transfer students between classes.</p>
+          </div>
+
+          <div class="roster-header-stats">
+            <div class="mini-stat-badge">
+              <span>Total Classes:</span>
+              <strong id="totalClassesCount">0</strong>
+            </div>
+            <div class="mini-stat-badge">
+              <span>Active Classes:</span>
+              <strong id="activeClassesCount">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="roster-toolbar">
+          <div class="search-box">
+            <input type="search" id="classSearchInput" placeholder="Search classes by name or description..." aria-label="Search classes">
+          </div>
+          <div class="filter-group">
+            <select id="classStatusFilter" aria-label="Filter by class status">
+              <option value="All">All Statuses</option>
+              <option value="Active">Active Only</option>
+              <option value="Inactive">Archived / Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="classList" class="classes-grid" aria-live="polite">
+          <!-- Rendered dynamically via JavaScript -->
+        </div>
+      </section>
+
+      <!-- =================================================
+           ADD / CREATE CLASS SECTION
+           ================================================= -->
+      <section id="classFormSection" class="student-form-section" aria-labelledby="classFormTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">CLASS ADMINISTRATION</p>
+            <h2 id="classFormTitle">Create New Class</h2>
+            <p>Define a new class level (e.g. Form 1, Form 2, Form 3) to organize students and manage rosters.</p>
+          </div>
+        </div>
+
+        <form id="classCreationForm" class="student-form" novalidate>
+          <fieldset class="form-fieldset">
+            <legend class="form-legend"><span class="form-step">01</span> Class Information</legend>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="className">Class Name *</label>
+                <input type="text" id="className" name="name" required placeholder="e.g. Form 1" autocomplete="off" aria-describedby="errorClassName">
+                <span class="field-error" id="errorClassName" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="classDescription">Description (Optional)</label>
+                <textarea id="classDescription" name="description" rows="3" placeholder="Enter class description, grade level details, or stream notes..."></textarea>
+              </div>
+
+              <div class="form-group full-width">
+                <label class="checkbox-item" style="font-weight: 600;">
+                  <input type="checkbox" id="classActive" name="active" checked>
+                  <span>Active &amp; Available for Student Assignment</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- FORM ACTIONS -->
+          <div class="form-actions">
+            <button type="submit" id="saveClassBtn" class="submit-btn">
+              <span>➕ Create &amp; Add Class</span>
+            </button>
+            <button type="reset" class="btn-reset">Reset Form</button>
+            <p id="classFormFeedback" class="form-feedback" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <!-- =================================================
+           STUDENT RESULTS & REPORT CARDS SECTION
+           ================================================= -->
+      <section id="resultsSection" class="results-section" aria-labelledby="resultsTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">ACADEMICS &amp; ASSESSMENTS</p>
+            <h2 id="resultsTitle">Student Results &amp; Report Cards</h2>
+            <p>Enter continuous assessment (CA) and exam scores, review terminal averages, and download official PDF report cards.</p>
+          </div>
+        </div>
+
+        <div class="results-layout-grid">
+          <!-- Left Column: Score Entry Form -->
+          <div class="results-card score-entry-box">
+            <div class="card-header-bar">
+              <span class="card-icon">📝</span>
+              <h3>Quick Score Entry</h3>
+            </div>
+            <p class="card-subtext">Record marks for a student and subject. Total score is computed automatically (CA + Exam = Total).</p>
+
+            <form id="scoreEntryForm" class="score-form" novalidate>
+              <div class="form-group">
+                <label for="resultStudentSelect">Select Student *</label>
+                <select id="resultStudentSelect" name="studentId" required>
+                  <option value="" disabled selected>-- Loading Students... --</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="resultSubjectSelect">Select Subject *</label>
+                <select id="resultSubjectSelect" name="subjectName" required>
+                  <option value="" disabled selected>-- Select Subject --</option>
+                </select>
+              </div>
+
+              <div class="score-inputs-row">
+                <div class="form-group">
+                  <label for="resultCaScore">CA Score (30%)</label>
+                  <input type="number" id="resultCaScore" name="caScore" min="0" max="100" step="0.5" placeholder="e.g. 25">
+                </div>
+
+                <div class="form-group">
+                  <label for="resultExamScore">Exam Score (70%)</label>
+                  <input type="number" id="resultExamScore" name="examScore" min="0" max="100" step="0.5" placeholder="e.g. 65">
+                </div>
+              </div>
+
+              <!-- Live Total Preview Badge -->
+              <div class="live-total-container">
+                <span class="live-total-label">Computed Total:</span>
+                <span id="liveTotalBadge" class="live-total-badge">Total: -- / 100</span>
+              </div>
+
+              <div class="form-actions" style="margin-top: 1.25rem;">
+                <button type="submit" id="saveScoreBtn" class="submit-btn full-width">
+                  <span>💾 Save &amp; Update Score</span>
+                </button>
+                <p id="scoreFormFeedback" class="form-feedback" aria-live="polite"></p>
+              </div>
+            </form>
+          </div>
+
+          <!-- Right Column: Terminal Report Card Viewer -->
+          <div class="results-card report-viewer-box">
+            <div class="card-header-bar-flex">
+              <div class="header-left">
+                <span class="card-icon">📊</span>
+                <h3>Terminal Academic Report Card</h3>
+              </div>
+              <button type="button" id="downloadReportPdfBtn" class="btn-pdf-download">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="svg-icon">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download Official PDF
+              </button>
+            </div>
+
+            <!-- Student Filter Bar -->
+            <div class="report-filter-bar">
+              <label for="reportStudentSelect" class="sr-only">Choose Student</label>
+              <select id="reportStudentSelect" class="report-student-dropdown">
+                <option value="" disabled selected>-- Select Student to View Report --</option>
+              </select>
+            </div>
+
+            <!-- Report Card Container -->
+            <div id="studentReportCardContainer" class="report-card-container">
+              <!-- Rendered dynamically via resultsMain.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================
+           COMMUNICATION & CONTACT SECTION
+           ================================================= -->
+      <section id="contactSection" class="contact-section" aria-labelledby="contactTitle">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">COMMUNICATION</p>
+            <h2 id="contactTitle">Contact Administration</h2>
+            <p>Have questions or need assistance? Send a message to the school administration office.</p>
+          </div>
+        </div>
+
+        <form id="contactForm" class="contact-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="fullName" required placeholder="e.g. Ama Mensah" autocomplete="name">
+            </div>
+
+            <div class="form-group">
+              <label for="emailAddress">Email Address</label>
+              <input type="email" id="emailAddress" name="email" required placeholder="e.g. ama@example.com" autocomplete="email">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="inquiryType">Inquiry Type</label>
+              <select id="inquiryType" name="inquiryType" required>
+                <option value="" disabled selected>Select an option</option>
+                <option value="admissions">Admissions &amp; Enrollment</option>
+                <option value="fees">Tuition &amp; School Fees</option>
+                <option value="academics">Academic Records</option>
+                <option value="general">General Inquiry</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="4" required placeholder="Type your message here..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="submitContactBtn" class="submit-btn">
+              Send Message
+            </button>
+            <p id="formFeedback" class="form-feedback" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Student Profile Modal -->
+  <div id="studentModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalStudentName">
+    <div class="modal-card">
+      <button id="closeModalBtn" type="button" class="close-modal-btn" aria-label="Close modal">&times;</button>
+      <div id="modalBody" class="modal-body">
+        <!-- Student details rendered dynamically via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher Profile & Edit Modal -->
+  <div id="teacherModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTeacherName">
+    <div class="modal-card">
+      <button id="closeTeacherModalBtn" type="button" class="close-modal-btn" aria-label="Close modal">&times;</button>
+      <div id="teacherModalBody" class="modal-body">
+        <!-- Teacher details rendered dynamically via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Subject Details & Edit Modal -->
+  <div id="subjectModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalSubjectName">
+    <div class="modal-card">
+      <button id="closeSubjectModalBtn" type="button" class="close-modal-btn" aria-label="Close modal">&times;</button>
+      <div id="subjectModalBody" class="modal-body">
+        <!-- Subject details rendered dynamically via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Class Details & Manage Students Modal -->
+  <div id="classModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalClassName">
+    <div class="modal-card">
+      <button id="closeClassModalBtn" type="button" class="close-modal-btn" aria-label="Close modal">&times;</button>
+      <div id="classModalBody" class="modal-body">
+        <!-- Class details & student roster rendered dynamically via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- App Bootstrap ES6 Module -->
+  <script type="module" src="js/main.js?v=3.9"></script>
+</body>
+
+</html>

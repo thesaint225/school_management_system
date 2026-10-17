@@ -1,0 +1,112 @@
+// studentApi.js - REST API Client connecting Frontend to Spring Boot & Database
+const API_BASE_URL = 'http://localhost:8080/api/students';
+
+/**
+ * Fetch all students from the database via Spring Boot REST API.
+ * Returns array of students, or null if network error / server offline.
+ */
+export async function fetchStudentsFromDb() {
+  try {
+    const response = await fetch(API_BASE_URL, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server returned HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(`🌐 Loaded ${data.length} student records from database.`);
+    return data;
+  } catch (error) {
+    console.warn('⚠️ Could not connect to backend database. Running with local cache / seed data.', error);
+    return null;
+  }
+}
+
+/**
+ * Register a new student into the database via Spring Boot POST /api/students.
+ * @param {Object} studentRegistrationDto
+ * @returns {Promise<Object>} The persisted Student entity returned from DB
+ */
+export async function registerStudentInDb(studentRegistrationDto) {
+  const response = await fetch(API_BASE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(studentRegistrationDto),
+  });
+
+  if (!response.ok) {
+    let errorDetails = `HTTP ${response.status}`;
+    try {
+      const errorJson = await response.json();
+      errorDetails = errorJson.message || JSON.stringify(errorJson);
+    } catch {
+      const text = await response.text();
+      if (text) errorDetails = text;
+    }
+    throw new Error(errorDetails);
+  }
+
+  const createdStudent = await response.json();
+  console.log('✅ Successfully persisted student to database:', createdStudent);
+  return createdStudent;
+}
+
+/**
+ * Update an existing student record in the database via Spring Boot PUT /api/students/{id}.
+ * @param {number|string} id - Student ID
+ * @param {Object} studentRegistrationDto - Updated student DTO payload
+ * @returns {Promise<Object>} The updated Student entity returned from DB
+ */
+export async function updateStudentInDb(id, studentRegistrationDto) {
+  const response = await fetch(`${API_BASE_URL}/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(studentRegistrationDto),
+  });
+
+  if (!response.ok) {
+    let errorDetails = `HTTP ${response.status}`;
+    try {
+      const errorJson = await response.json();
+      errorDetails = errorJson.message || JSON.stringify(errorJson);
+    } catch {
+      const text = await response.text();
+      if (text) errorDetails = text;
+    }
+    throw new Error(errorDetails);
+  }
+
+  const updatedStudent = await response.json();
+  console.log(`✅ Successfully updated student #${id} in database:`, updatedStudent);
+  return updatedStudent;
+}
+
+/**
+ * Delete a student record from the database via Spring Boot DELETE /api/students/{id}.
+ * @param {number|string} id - Student ID
+ * @returns {Promise<boolean>}
+ */
+export async function deleteStudentFromDb(id) {
+  const response = await fetch(`${API_BASE_URL}/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok && response.status !== 204) {
+    throw new Error(`Failed to delete student #${id}: HTTP ${response.status}`);
+  }
+
+  console.log(`🗑️ Successfully deleted student #${id} from database.`);
+  return true;
+}
+
