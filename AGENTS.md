@@ -218,6 +218,38 @@ The backend/database is the source of truth. The frontend displays and interacts
   2. Confirm that no user-controlled or API-supplied string reaches an unescaped HTML sink.
   3. Ensure all dropdown options, banners, and dynamic text use `textContent` or `createElement`.
 
+## Runtime API Response Validation & Trust Boundaries
+
+### Rule 1: Mandatory Runtime Validation at Trust Boundaries
+- All external data entering the application via `fetch()` or other network mechanisms must be validated at runtime before it is returned to callers, stored in application state, or rendered in the UI.
+- Do not assume that `response.ok` or successful `response.json()` parsing means the data is structurally valid or safe.
+- Do not assume TypeScript interfaces or static types validate data at runtime. JavaScript runtime validation must inspect actual values, primitive types, and collections.
+
+### Rule 2: Contract-Based Validation Matching Backend DTOs & Models
+- Response validators must strictly reflect the backend Spring Boot entity and DTO contracts (`Student`, `Teacher`, `ClassResponseDto`, `Subject`, `AcademicTerm`, `CalendarEvent`, `StudentReportDto`).
+- Required fields, numeric boundaries, non-empty text, enum values, and date strings (`YYYY-MM-DD` or ISO 8601) must be verified.
+- Optional and nullable fields must be explicitly declared and verified without false rejections.
+- Every item within a returned collection/array must be individually validated.
+
+### Rule 3: Reusable Validation Architecture
+- Maintain reusable primitive and domain validators in `frontEnd/js/utils/apiValidator.js`.
+- Avoid duplicating ad-hoc validation logic across individual API client functions or UI components.
+- When an API response fails validation, throw an `ApiValidationError` describing the field and expected vs. received types.
+
+### Rule 4: Privacy & Sensitive Data Protection
+- Validation error messages and logs must **never** leak sensitive student personal identifiable information (PII) or financial details (e.g. full names, phone numbers, guardian details, or fees data).
+- Logs must describe structural discrepancies (e.g. `Field "gpa" expected number, received string`) rather than printing raw sensitive payloads.
+
+### Rule 5: Safe Error & Fallback Handling
+- Never silently treat malformed responses as successful empty results.
+- When backend connectivity fails or response data is invalid, log a structured warning and safely activate existing seed data fallbacks without crashing downstream roster, attendance, or dashboard rendering.
+
+### Rule 6: Testing Requirements for API Data Boundaries
+- Automated tests must verify both valid payloads and malformed responses (missing required fields, incorrect types, corrupted nested objects, and invalid array items).
+- Tests must use deterministic fixtures and mocked network responses to test validation logic independently of a live backend.
+
+
+
 
   I am learning software development. My goal is to understand the code I build, not just get a working application.
 

@@ -1,9 +1,13 @@
+import { validateStudent, validateStudentList } from '../utils/apiValidator.js';
+
 // studentApi.js - REST API Client connecting Frontend to Spring Boot & Database
 const API_BASE_URL = 'http://localhost:8080/api/students';
 
 /**
  * Fetch all students from the database via Spring Boot REST API.
- * Returns array of students, or null if network error / server offline.
+ * Validates the response shape before returning it to the application.
+ * Returns array of validated students, or null if network error / validation failure / server offline.
+ * @returns {Promise<Array<Object>|null>}
  */
 export async function fetchStudentsFromDb() {
   try {
@@ -18,11 +22,12 @@ export async function fetchStudentsFromDb() {
       throw new Error(`Server returned HTTP ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log(`🌐 Loaded ${data.length} student records from database.`);
-    return data;
+    const rawData = await response.json();
+    const validatedData = validateStudentList(rawData, 'GET /api/students');
+    console.log(`🌐 Loaded & validated ${validatedData.length} student records from database.`);
+    return validatedData;
   } catch (error) {
-    console.warn('⚠️ Could not connect to backend database. Running with local cache / seed data.', error);
+    console.warn('⚠️ Could not load valid student data from database. Running with local cache / seed data.', error);
     return null;
   }
 }
@@ -54,8 +59,9 @@ export async function registerStudentInDb(studentRegistrationDto) {
     throw new Error(errorDetails);
   }
 
-  const createdStudent = await response.json();
-  console.log('✅ Successfully persisted student to database:', createdStudent);
+  const createdRaw = await response.json();
+  const createdStudent = validateStudent(createdRaw, 'POST /api/students');
+  console.log('✅ Successfully persisted & validated student in database:', createdStudent);
   return createdStudent;
 }
 
@@ -87,8 +93,9 @@ export async function updateStudentInDb(id, studentRegistrationDto) {
     throw new Error(errorDetails);
   }
 
-  const updatedStudent = await response.json();
-  console.log(`✅ Successfully updated student #${id} in database:`, updatedStudent);
+  const updatedRaw = await response.json();
+  const updatedStudent = validateStudent(updatedRaw, `PUT /api/students/${id}`);
+  console.log(`✅ Successfully updated & validated student #${id} in database:`, updatedStudent);
   return updatedStudent;
 }
 

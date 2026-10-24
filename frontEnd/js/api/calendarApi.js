@@ -1,10 +1,18 @@
+import {
+  validateCalendarEvent,
+  validateCalendarEventList,
+  validateAcademicTerm,
+  validateAcademicTermList,
+} from '../utils/apiValidator.js';
+
 // calendarApi.js - REST API Client connecting Frontend to Spring Boot & Database for Academic Calendar & Events
 const API_BASE_URL = 'http://localhost:8080/api/calendar';
 
 /**
  * Fetch all calendar events from the backend database.
+ * Validates array of events against the CalendarEvent contract.
  * @param {string} [category] - Optional category filter (term, event, exam, holiday, deadline)
- * @returns {Promise<Array|null>} Array of calendar events, or null if network/server error
+ * @returns {Promise<Array|null>} Array of validated calendar events, or null if network/server/validation error
  */
 export async function fetchCalendarEventsFromDb(category = null) {
   try {
@@ -23,18 +31,20 @@ export async function fetchCalendarEventsFromDb(category = null) {
       throw new Error(`Server returned HTTP ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log(`📅 Loaded ${data.length} calendar events from database.`);
-    return data;
+    const rawData = await response.json();
+    const validatedData = validateCalendarEventList(rawData, 'GET /api/calendar/events');
+    console.log(`📅 Loaded & validated ${validatedData.length} calendar events from database.`);
+    return validatedData;
   } catch (error) {
-    console.warn('⚠️ Could not connect to backend database for calendar events; using fallback data.', error);
+    console.warn('⚠️ Could not load valid calendar events from database; using fallback data.', error);
     return null;
   }
 }
 
 /**
  * Fetch all academic terms from the backend database.
- * @returns {Promise<Array|null>} Array of academic terms, or null if network/server error
+ * Validates array of terms against the AcademicTerm contract.
+ * @returns {Promise<Array|null>} Array of validated academic terms, or null if network/server/validation error
  */
 export async function fetchAcademicTermsFromDb() {
   try {
@@ -49,17 +59,19 @@ export async function fetchAcademicTermsFromDb() {
       throw new Error(`Server returned HTTP ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log(`🏛️ Loaded ${data.length} academic terms from database.`);
-    return data;
+    const rawData = await response.json();
+    const validatedData = validateAcademicTermList(rawData, 'GET /api/calendar/terms');
+    console.log(`🏛️ Loaded & validated ${validatedData.length} academic terms from database.`);
+    return validatedData;
   } catch (error) {
-    console.warn('⚠️ Could not connect to backend database for academic terms; using fallback data.', error);
+    console.warn('⚠️ Could not load valid academic terms from database; using fallback data.', error);
     return null;
   }
 }
 
 /**
  * Fetch currently active academic term.
+ * Validates term against AcademicTerm contract.
  * @returns {Promise<Object|null>}
  */
 export async function fetchActiveTermFromDb() {
@@ -75,9 +87,10 @@ export async function fetchActiveTermFromDb() {
       throw new Error(`Server returned HTTP ${response.status}`);
     }
 
-    return await response.json();
+    const raw = await response.json();
+    return validateAcademicTerm(raw, 'GET /api/calendar/terms/active');
   } catch (error) {
-    console.warn('⚠️ Could not connect to backend for active academic term.', error);
+    console.warn('⚠️ Could not load valid active academic term from database.', error);
     return null;
   }
 }
@@ -85,7 +98,7 @@ export async function fetchActiveTermFromDb() {
 /**
  * Create a new calendar event in the database.
  * @param {Object} eventDto
- * @returns {Promise<Object>}
+ * @returns {Promise<Object>} Validated created event entity
  */
 export async function createCalendarEventInDb(eventDto) {
   const response = await fetch(`${API_BASE_URL}/events`, {
@@ -109,7 +122,8 @@ export async function createCalendarEventInDb(eventDto) {
     throw new Error(errorDetails);
   }
 
-  const created = await response.json();
-  console.log('✅ Created calendar event in database:', created);
+  const raw = await response.json();
+  const created = validateCalendarEvent(raw, 'POST /api/calendar/events');
+  console.log('✅ Created & validated calendar event in database:', created);
   return created;
 }

@@ -1,10 +1,13 @@
+import { validateStudentReport, validateStudentReportList } from '../utils/apiValidator.js';
+
 // resultApi.js - REST API Client connecting Frontend to Spring Boot Results & PDF generation
 const API_BASE_URL = 'http://localhost:8080/api/results';
 
 /**
  * Save or update a score for a student & subject.
+ * Validates the updated student report card before returning.
  * @param {Object} scoreEntryDto - { studentId, subjectName, caScore, examScore }
- * @returns {Promise<Object>} Updated student report card
+ * @returns {Promise<Object>} Validated updated student report card
  */
 export async function saveScoreToDb(scoreEntryDto) {
   const response = await fetch(API_BASE_URL, {
@@ -28,13 +31,15 @@ export async function saveScoreToDb(scoreEntryDto) {
     throw new Error(errorDetails);
   }
 
-  const updatedReport = await response.json();
-  console.log('✅ Successfully saved score and updated report:', updatedReport);
+  const rawReport = await response.json();
+  const updatedReport = validateStudentReport(rawReport, 'POST /api/results');
+  console.log('✅ Successfully saved score and validated report:', updatedReport);
   return updatedReport;
 }
 
 /**
  * Fetch a student's terminal report card with calculated average.
+ * Validates the report structure before returning.
  * @param {number|string} studentId
  * @returns {Promise<Object|null>}
  */
@@ -51,15 +56,17 @@ export async function fetchStudentReportFromDb(studentId) {
       throw new Error(`Server returned HTTP ${response.status}`);
     }
 
-    return await response.json();
+    const rawReport = await response.json();
+    return validateStudentReport(rawReport, `GET /api/results/student/${studentId}`);
   } catch (error) {
-    console.warn(`⚠️ Could not fetch report for student #${studentId}:`, error);
+    console.warn(`⚠️ Could not fetch or validate report for student #${studentId}:`, error);
     return null;
   }
 }
 
 /**
  * Fetch all student academic reports.
+ * Validates array of reports against StudentReportDto contract.
  * @returns {Promise<Array>}
  */
 export async function fetchAllReportsFromDb() {
@@ -75,9 +82,10 @@ export async function fetchAllReportsFromDb() {
       throw new Error(`Server returned HTTP ${response.status}`);
     }
 
-    return await response.json();
+    const rawReports = await response.json();
+    return validateStudentReportList(rawReports, 'GET /api/results');
   } catch (error) {
-    console.warn('⚠️ Could not fetch reports list:', error);
+    console.warn('⚠️ Could not fetch or validate reports list:', error);
     return [];
   }
 }

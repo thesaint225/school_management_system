@@ -1,9 +1,13 @@
+import { validateTeacher, validateTeacherList } from '../utils/apiValidator.js';
+
 // teacherApi.js - REST API Client connecting Frontend to Spring Boot & Database for Teachers
 const API_BASE_URL = 'http://localhost:8080/api/teachers';
 
 /**
  * Fetch all teachers from the database via Spring Boot REST API.
- * Returns array of teachers, or null if network error / server offline.
+ * Validates array of teachers against the Teacher contract before returning.
+ * Returns array of teachers, or null if network error / validation failure / server offline.
+ * @returns {Promise<Array<Object>|null>}
  */
 export async function fetchTeachersFromDb() {
   try {
@@ -18,11 +22,12 @@ export async function fetchTeachersFromDb() {
       throw new Error(`Server returned HTTP ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log(`🌐 Loaded ${data.length} teacher records from database.`);
-    return data;
+    const rawData = await response.json();
+    const validatedData = validateTeacherList(rawData, 'GET /api/teachers');
+    console.log(`🌐 Loaded & validated ${validatedData.length} teacher records from database.`);
+    return validatedData;
   } catch (error) {
-    console.warn('⚠️ Could not connect to backend database for teachers. Running with local cache / seed data.', error);
+    console.warn('⚠️ Could not load valid teacher data from database. Running with local cache / seed data.', error);
     return null;
   }
 }
@@ -30,7 +35,7 @@ export async function fetchTeachersFromDb() {
 /**
  * Register a new teacher into the database via Spring Boot POST /api/teachers.
  * @param {Object} teacherRegistrationDto
- * @returns {Promise<Object>} The persisted Teacher entity returned from DB
+ * @returns {Promise<Object>} The persisted & validated Teacher entity returned from DB
  */
 export async function registerTeacherInDb(teacherRegistrationDto) {
   const response = await fetch(API_BASE_URL, {
@@ -54,8 +59,9 @@ export async function registerTeacherInDb(teacherRegistrationDto) {
     throw new Error(errorDetails);
   }
 
-  const createdTeacher = await response.json();
-  console.log('✅ Successfully persisted teacher to database:', createdTeacher);
+  const rawCreated = await response.json();
+  const createdTeacher = validateTeacher(rawCreated, 'POST /api/teachers');
+  console.log('✅ Successfully persisted & validated teacher to database:', createdTeacher);
   return createdTeacher;
 }
 
@@ -63,7 +69,7 @@ export async function registerTeacherInDb(teacherRegistrationDto) {
  * Update an existing teacher record in the database via Spring Boot PUT /api/teachers/{id}.
  * @param {number|string} id - Teacher ID
  * @param {Object} teacherRegistrationDto - Updated teacher DTO payload
- * @returns {Promise<Object>} The updated Teacher entity returned from DB
+ * @returns {Promise<Object>} The updated & validated Teacher entity returned from DB
  */
 export async function updateTeacherInDb(id, teacherRegistrationDto) {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
@@ -87,8 +93,9 @@ export async function updateTeacherInDb(id, teacherRegistrationDto) {
     throw new Error(errorDetails);
   }
 
-  const updatedTeacher = await response.json();
-  console.log(`✅ Successfully updated teacher #${id} in database:`, updatedTeacher);
+  const rawUpdated = await response.json();
+  const updatedTeacher = validateTeacher(rawUpdated, `PUT /api/teachers/${id}`);
+  console.log(`✅ Successfully updated & validated teacher #${id} in database:`, updatedTeacher);
   return updatedTeacher;
 }
 
