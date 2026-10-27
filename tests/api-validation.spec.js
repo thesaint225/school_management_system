@@ -23,6 +23,7 @@ import {
   validateStudentReport,
   validateStudentReportList,
   validateDeleteClassResult,
+  validateFee,
 } from '../frontEnd/js/utils/apiValidator.js';
 
 test.describe('Runtime API Data Validation Suite', () => {
@@ -114,6 +115,40 @@ test.describe('Runtime API Data Validation Suite', () => {
 
       expect(() => assertEnum('Unknown', 'status', allowed, 'TEST')).toThrow(ApiValidationError);
       expect(() => assertEnum(123, 'status', allowed, 'TEST')).toThrow(ApiValidationError);
+    });
+
+    test('defensive destructuring: safely handles null or omitted options without throwing unhandled TypeError', () => {
+      // Calling assertions with explicit null for options must not crash on parameter destructuring
+      expect(assertString('Hello', 'title', 'TEST', null)).toBe('Hello');
+      expect(assertNumber(100, 'score', 'TEST', null)).toBe(100);
+      expect(assertBoolean(true, 'isActive', 'TEST', null)).toBe(true);
+      expect(assertArray([1, 2], 'list', null, 'TEST', null)).toEqual([1, 2]);
+      expect(assertDateString('2026-10-27', 'dueDate', 'TEST', null)).toBe('2026-10-27');
+      expect(assertEnum('Active', 'status', ['Active'], 'TEST', null)).toBe('Active');
+    });
+
+    test('validateFee: validates finite non-negative numbers and enforces TypeError vs RangeError', () => {
+      // 1. Valid numbers
+      expect(validateFee(0, 'tuitionFee')).toBe(0);
+      expect(validateFee(1500.5, 'tuitionFee')).toBe(1500.5);
+      expect(validateFee(undefined, 'optionalFee', 'TEST', { optional: true })).toBeUndefined();
+      expect(validateFee(null, 'nullableFee', 'TEST', { nullable: true })).toBeNull();
+      // Safe destructuring on null options
+      expect(validateFee(200, 'tuitionFee', 'TEST', null)).toBe(200);
+
+      // 2. Type errors (TypeError)
+      expect(() => validateFee('100', 'tuitionFee')).toThrow(TypeError);
+      expect(() => validateFee(null, 'tuitionFee')).toThrow(TypeError);
+      expect(() => validateFee(undefined, 'tuitionFee')).toThrow(TypeError);
+      expect(() => validateFee({}, 'tuitionFee')).toThrow(TypeError);
+      expect(() => validateFee(true, 'tuitionFee')).toThrow(TypeError);
+
+      // 3. Range errors (RangeError)
+      expect(() => validateFee(-0.01, 'tuitionFee')).toThrow(RangeError);
+      expect(() => validateFee(-500, 'tuitionFee')).toThrow(RangeError);
+      expect(() => validateFee(NaN, 'tuitionFee')).toThrow(RangeError);
+      expect(() => validateFee(Infinity, 'tuitionFee')).toThrow(RangeError);
+      expect(() => validateFee(-Infinity, 'tuitionFee')).toThrow(RangeError);
     });
   });
 

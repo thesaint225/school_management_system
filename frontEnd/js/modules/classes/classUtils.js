@@ -36,7 +36,10 @@ export function invalidateClassCache() {
  * @param {string} [placeholderText='Select class level'] - Default prompt option
  */
 export async function populateClassSelectOptions(selectEl, selectedValue = '', placeholderText = 'Select class level') {
-  if (!selectEl) return;
+  if (!selectEl) {
+    console.warn('[classUtils] populateClassSelectOptions: target selectEl element was not provided or not found in DOM.');
+    return;
+  }
 
   const classes = await getActiveClasses();
 
@@ -80,10 +83,16 @@ export async function populateClassSelectOptions(selectEl, selectedValue = '', p
  * @param {Function} [onChange] - Optional change event listener
  */
 export async function populateClassCheckboxes(containerEl, selectedNames = [], inputName = 'classes', onChange = null) {
-  if (!containerEl) return;
+  if (!containerEl) {
+    console.warn('[classUtils] populateClassCheckboxes: containerEl element was not provided or not found in DOM.');
+    return;
+  }
 
   const classes = await getActiveClasses();
-  const selectedSet = new Set(selectedNames || []);
+  const safeNames = Array.isArray(selectedNames)
+    ? selectedNames
+    : (selectedNames && typeof selectedNames[Symbol.iterator] === 'function' ? Array.from(selectedNames) : []);
+  const selectedSet = new Set(safeNames);
 
   if (!classes || classes.length === 0) {
     containerEl.innerHTML = '<span class="cal-empty-desc">No active classes available. Please add classes first.</span>';

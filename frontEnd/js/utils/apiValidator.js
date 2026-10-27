@@ -62,7 +62,8 @@ export function assertObject(value, fieldName, endpoint) {
  * @param {boolean} [options.nullable=false] - If true, null is allowed
  * @returns {string|null|undefined}
  */
-export function assertString(value, fieldName, endpoint, { minLength = 0, pattern = null, optional = false, nullable = false } = {}) {
+export function assertString(value, fieldName, endpoint, options = {}) {
+  const { minLength = 0, pattern = null, optional = false, nullable = false } = options || {};
   if (value === undefined) {
     if (optional) return undefined;
     throw new ApiValidationError(`Missing required string field "${fieldName}".`, endpoint, { field: fieldName });
@@ -114,7 +115,8 @@ export function assertString(value, fieldName, endpoint, { minLength = 0, patter
  * @param {boolean} [options.nullable=false]
  * @returns {number|null|undefined}
  */
-export function assertNumber(value, fieldName, endpoint, { min = -Infinity, max = Infinity, integer = false, optional = false, nullable = false } = {}) {
+export function assertNumber(value, fieldName, endpoint, options = {}) {
+  const { min = -Infinity, max = Infinity, integer = false, optional = false, nullable = false } = options || {};
   if (value === undefined) {
     if (optional) return undefined;
     throw new ApiValidationError(`Missing required numeric field "${fieldName}".`, endpoint, { field: fieldName });
@@ -153,6 +155,42 @@ export function assertNumber(value, fieldName, endpoint, { min = -Infinity, max 
 }
 
 /**
+ * Asserts that a fee value is a finite, non-negative number.
+ * Adheres to Rule 4 of AGENTS.md (domain numeric boundaries).
+ * Throws TypeError if value is not a number.
+ * Throws RangeError if value is NaN, Infinity, -Infinity, or negative.
+ * @param {*} value
+ * @param {string} [fieldName='fee']
+ * @param {string} [endpoint='Financial API']
+ * @param {Object} [options]
+ * @param {boolean} [options.optional=false]
+ * @param {boolean} [options.nullable=false]
+ * @returns {number|null|undefined}
+ */
+export function validateFee(value, fieldName = 'fee', endpoint = 'Financial API', options = {}) {
+  const { optional = false, nullable = false } = options || {};
+  if (value === undefined) {
+    if (optional) return undefined;
+    throw new TypeError(`Missing required fee field "${fieldName}".`);
+  }
+
+  if (value === null) {
+    if (nullable) return null;
+    throw new TypeError(`Fee field "${fieldName}" cannot be null.`);
+  }
+
+  if (typeof value !== 'number') {
+    throw new TypeError(`Fee field "${fieldName}" must be a number, received ${typeof value}.`);
+  }
+
+  if (!Number.isFinite(value) || value < 0) {
+    throw new RangeError(`Fee field "${fieldName}" must be a finite, non-negative number, received ${value}.`);
+  }
+
+  return value;
+}
+
+/**
  * Asserts that a value is a boolean.
  * @param {*} value
  * @param {string} fieldName
@@ -162,7 +200,8 @@ export function assertNumber(value, fieldName, endpoint, { min = -Infinity, max 
  * @param {boolean} [options.nullable=false]
  * @returns {boolean|null|undefined}
  */
-export function assertBoolean(value, fieldName, endpoint, { optional = false, nullable = false } = {}) {
+export function assertBoolean(value, fieldName, endpoint, options = {}) {
+  const { optional = false, nullable = false } = options || {};
   if (value === undefined) {
     if (optional) return undefined;
     throw new ApiValidationError(`Missing required boolean field "${fieldName}".`, endpoint, { field: fieldName });
@@ -196,7 +235,8 @@ export function assertBoolean(value, fieldName, endpoint, { optional = false, nu
  * @param {boolean} [options.nullable=false]
  * @returns {Array|null|undefined}
  */
-export function assertArray(value, fieldName, itemValidator, endpoint, { minLength = 0, optional = false, nullable = false } = {}) {
+export function assertArray(value, fieldName, itemValidator, endpoint, options = {}) {
+  const { minLength = 0, optional = false, nullable = false } = options || {};
   if (value === undefined) {
     if (optional) return undefined;
     throw new ApiValidationError(`Missing required array field "${fieldName}".`, endpoint, { field: fieldName });
@@ -240,7 +280,8 @@ export function assertArray(value, fieldName, itemValidator, endpoint, { minLeng
  * @param {boolean} [options.nullable=false]
  * @returns {string|null|undefined}
  */
-export function assertDateString(value, fieldName, endpoint, { optional = false, nullable = false } = {}) {
+export function assertDateString(value, fieldName, endpoint, options = {}) {
+  const { optional = false, nullable = false } = options || {};
   if (value === undefined && optional) return undefined;
   if (value === null && nullable) return null;
 
@@ -267,7 +308,8 @@ export function assertDateString(value, fieldName, endpoint, { optional = false,
  * @param {boolean} [options.nullable=false]
  * @returns {string|null|undefined}
  */
-export function assertEnum(value, fieldName, allowedValues, endpoint, { optional = false, nullable = false } = {}) {
+export function assertEnum(value, fieldName, allowedValues, endpoint, options = {}) {
+  const { optional = false, nullable = false } = options || {};
   if (value === undefined && optional) return undefined;
   if (value === null && nullable) return null;
 
