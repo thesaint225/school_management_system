@@ -43,7 +43,8 @@ data/
 .sts4-cache/
 
 # Agent / Environment files
-.agents/
+.agents/*
+!.agents/skills/
 *.log
 .env
 .env.local
