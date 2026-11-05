@@ -41,6 +41,7 @@ export async function populateClassSelectOptions(selectEl, selectedValue = '', p
     return;
   }
 
+  const currentVal = selectedValue || selectEl.value || '';
   const classes = await getActiveClasses();
 
   selectEl.innerHTML = '';
@@ -59,20 +60,26 @@ export async function populateClassSelectOptions(selectEl, selectedValue = '', p
   defaultOption.value = '';
   defaultOption.textContent = placeholderText;
   defaultOption.disabled = true;
-  if (!selectedValue) {
+  if (!currentVal) {
     defaultOption.selected = true;
   }
   selectEl.appendChild(defaultOption);
 
+  let hasSelected = false;
   classes.forEach((cls) => {
     const option = document.createElement('option');
     option.value = cls.name;
     option.textContent = `${cls.name} (${cls.studentCount || 0} students)`;
-    if (selectedValue && cls.name.toLowerCase() === selectedValue.toLowerCase()) {
+    if (currentVal && cls.name.toLowerCase() === currentVal.toLowerCase()) {
       option.selected = true;
+      hasSelected = true;
     }
     selectEl.appendChild(option);
   });
+
+  if (currentVal && !hasSelected) {
+    defaultOption.selected = true;
+  }
 }
 
 /**

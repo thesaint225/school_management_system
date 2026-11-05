@@ -10,20 +10,22 @@ import {
   fetchClassesFromDb,
 } from '../../api/classApi.js';
 import { fetchStudentsFromDb } from '../../api/studentApi.js';
+import { fetchTeachersFromDb } from '../../api/teacherApi.js';
 import { teachers } from '../../data/teachersData.js';
 import { getInitials } from '../students/studentModal.js';
 
 let activeClass = null;
 let onClassUpdateCallback = null;
 
-export function renderClassDetails(cls, students = []) {
+export function renderClassDetails(cls, students = [], teacherList = teachers) {
   const isActive = cls.active !== false;
   const statusBadgeClass = isActive ? 'status-badge-active' : 'status-badge-danger';
   const statusText = isActive ? 'Active' : 'Archived / Inactive';
   const studentCount = students.length;
   const description = cls.description || 'No detailed syllabus or level overview provided.';
 
-  const assignedTeachers = teachers.filter((t) => (t.classes || []).includes(cls.name));
+  const sourceTeachers = Array.isArray(teacherList) && teacherList.length > 0 ? teacherList : teachers;
+  const assignedTeachers = sourceTeachers.filter((t) => (t.classes || []).includes(cls.name));
   const teachersHTML = assignedTeachers.length > 0
     ? assignedTeachers.map((t) => {
         const initials = getInitials(t.name || `${t.firstName || ''} ${t.lastName || ''}`);
@@ -647,8 +649,20 @@ export async function openClassModal(cls, mode = 'view', updateCallback = null, 
       students = [];
     }
 
+    if (!teachers || teachers.length === 0) {
+      try {
+        const dbTeachers = await fetchTeachersFromDb();
+        if (dbTeachers && Array.isArray(dbTeachers) && dbTeachers.length > 0) {
+          teachers.length = 0;
+          teachers.push(...dbTeachers);
+        }
+      } catch (err) {
+        console.warn('[classModal] Could not fetch teachers from database:', err);
+      }
+    }
+
     cls.studentCount = students.length;
-    modalBody.innerHTML = renderClassDetails(cls, students);
+    modalBody.innerHTML = renderClassDetails(cls, students, teachers);
 
     const editBtn = modalBody.querySelector('#editClassBtn');
     const editBottomBtn = modalBody.querySelector('#editClassBottomBtn');
