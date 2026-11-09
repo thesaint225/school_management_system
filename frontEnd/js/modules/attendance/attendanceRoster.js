@@ -1,5 +1,13 @@
 // Attendance Roster & Interactive Roll Call Module
-import { attendanceState } from './attendanceState.js';
+import {
+  getAttendanceState,
+  setAttendanceSearchQuery,
+  setAttendanceClassFilter,
+  setAttendanceStatusFilter,
+  setAttendanceGenderFilter,
+  setAttendancePageSize,
+  setAttendanceCurrentPage,
+} from './attendanceState.js';
 import { calculateAttendanceRate } from './attendanceAnalytics.js';
 import { getInitials } from '../students/studentModal.js';
 import { ICONS } from '../../utils/icons.js';
@@ -53,10 +61,8 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
 
   // Filtering Service
   function filterStudents() {
-    const query = attendanceState.searchQuery.trim().toLowerCase();
-    const classFilter = attendanceState.classFilter;
-    const statusFilter = attendanceState.statusFilter;
-    const genderFilter = attendanceState.genderFilter;
+    const { searchQuery, classFilter, statusFilter, genderFilter } = getAttendanceState();
+    const query = searchQuery.trim().toLowerCase();
 
     return students.filter((student) => {
       const formattedId =
@@ -251,13 +257,13 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
   function renderPagination(totalFilteredCount) {
     if (!rosterPagination) return;
 
-    const pageSize = attendanceState.pageSize;
+    const { pageSize, currentPage: rawCurrentPage } = getAttendanceState();
     const totalPages = Math.max(1, Math.ceil(totalFilteredCount / pageSize));
 
-    if (attendanceState.currentPage > totalPages) {
-      attendanceState.currentPage = totalPages;
+    if (rawCurrentPage > totalPages) {
+      setAttendanceCurrentPage(totalPages);
     }
-    const currentPage = attendanceState.currentPage;
+    const { currentPage } = getAttendanceState();
 
     if (paginationInfo) {
       if (totalFilteredCount === 0) {
@@ -315,8 +321,8 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
       return;
     }
 
-    const pageSize = attendanceState.pageSize;
-    const startIndex = (attendanceState.currentPage - 1) * pageSize;
+    const { pageSize, currentPage } = getAttendanceState();
+    const startIndex = (currentPage - 1) * pageSize;
     const paginatedStudents = filteredStudents.slice(
       startIndex,
       startIndex + pageSize,
@@ -332,40 +338,35 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
   // Event Listeners for Filters & Search
   if (rosterSearchInput) {
     rosterSearchInput.addEventListener('input', (e) => {
-      attendanceState.searchQuery = e.target.value;
-      attendanceState.currentPage = 1;
+      setAttendanceSearchQuery(e.target.value);
       renderAttendance();
     });
   }
 
   if (rosterClassFilter) {
     rosterClassFilter.addEventListener('change', (e) => {
-      attendanceState.classFilter = e.target.value;
-      attendanceState.currentPage = 1;
+      setAttendanceClassFilter(e.target.value);
       renderAttendance();
     });
   }
 
   if (rosterStatusFilter) {
     rosterStatusFilter.addEventListener('change', (e) => {
-      attendanceState.statusFilter = e.target.value;
-      attendanceState.currentPage = 1;
+      setAttendanceStatusFilter(e.target.value);
       renderAttendance();
     });
   }
 
   if (rosterGenderFilter) {
     rosterGenderFilter.addEventListener('change', (e) => {
-      attendanceState.genderFilter = e.target.value;
-      attendanceState.currentPage = 1;
+      setAttendanceGenderFilter(e.target.value);
       renderAttendance();
     });
   }
 
   if (pageSizeSelect) {
     pageSizeSelect.addEventListener('change', (e) => {
-      attendanceState.pageSize = Number(e.target.value);
-      attendanceState.currentPage = 1;
+      setAttendancePageSize(Number(e.target.value));
       renderAttendance();
     });
   }
@@ -401,8 +402,9 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
   // Pagination Event Listeners
   if (prevPageBtn) {
     prevPageBtn.addEventListener('click', () => {
-      if (attendanceState.currentPage > 1) {
-        attendanceState.currentPage -= 1;
+      const { currentPage } = getAttendanceState();
+      if (currentPage > 1) {
+        setAttendanceCurrentPage(currentPage - 1);
         renderAttendance();
       }
     });
@@ -410,10 +412,11 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
 
   if (nextPageBtn) {
     nextPageBtn.addEventListener('click', () => {
+      const { currentPage, pageSize } = getAttendanceState();
       const filteredCount = filterStudents().length;
-      const totalPages = Math.ceil(filteredCount / attendanceState.pageSize);
-      if (attendanceState.currentPage < totalPages) {
-        attendanceState.currentPage += 1;
+      const totalPages = Math.ceil(filteredCount / pageSize);
+      if (currentPage < totalPages) {
+        setAttendanceCurrentPage(currentPage + 1);
         renderAttendance();
       }
     });
@@ -424,8 +427,9 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
       const btn = e.target.closest('.page-num-btn');
       if (!btn) return;
       const pageNum = Number(btn.dataset.page);
-      if (pageNum && pageNum !== attendanceState.currentPage) {
-        attendanceState.currentPage = pageNum;
+      const { currentPage } = getAttendanceState();
+      if (pageNum && pageNum !== currentPage) {
+        setAttendanceCurrentPage(pageNum);
         renderAttendance();
       }
     });

@@ -4,22 +4,46 @@ import { fetchClassesFromDb } from '../../api/classApi.js';
 let cachedActiveClasses = null;
 
 /**
+ * Safely replace the internal class cache with a validated, deep-cloned array.
+ * @param {Array<Object>} classesList
+ */
+export function setClassCache(classesList) {
+  if (!Array.isArray(classesList)) {
+    throw new TypeError(`Expected an array of classes for setClassCache, received ${typeof classesList}.`);
+  }
+  classesList.forEach((cls, idx) => {
+    if (!cls || typeof cls !== 'object' || Array.isArray(cls)) {
+      throw new TypeError(`Class item at index ${idx} must be a non-null object.`);
+    }
+    if (typeof cls.name !== 'string' || cls.name.trim().length === 0) {
+      throw new TypeError(`Class item at index ${idx} must have a non-empty string "name".`);
+    }
+  });
+  cachedActiveClasses = structuredClone(classesList);
+}
+
+/**
  * Get active classes from backend API (with caching for performance).
- * @param {boolean} forceRefresh - If true, bypasses cache
- * @returns {Promise<Array>} Array of active class objects
+ * Returns a defensive deep clone so callers cannot mutate the internal cache.
+ * @param {boolean} [forceRefresh=false] - If true, bypasses cache
+ * @returns {Promise<Array<Object>>} Independent copy of active class objects
  */
 export async function getActiveClasses(forceRefresh = false) {
+  if (typeof forceRefresh !== 'boolean') {
+    throw new TypeError(`forceRefresh must be a boolean, received ${typeof forceRefresh}.`);
+  }
+
   if (!forceRefresh && cachedActiveClasses && cachedActiveClasses.length > 0) {
-    return cachedActiveClasses;
+    return structuredClone(cachedActiveClasses);
   }
 
   const classes = await fetchClassesFromDb(true);
-  if (classes && classes.length > 0) {
-    cachedActiveClasses = classes;
-    return classes;
+  if (Array.isArray(classes) && classes.length > 0) {
+    cachedActiveClasses = structuredClone(classes);
+    return structuredClone(cachedActiveClasses);
   }
 
-  return cachedActiveClasses || [];
+  return cachedActiveClasses ? structuredClone(cachedActiveClasses) : [];
 }
 
 /**
@@ -44,7 +68,7 @@ export async function populateClassSelectOptions(selectEl, selectedValue = '', p
   const currentVal = selectedValue || selectEl.value || '';
   const classes = await getActiveClasses();
 
-  selectEl.innerHTML = '';
+  selectEl.replaceChildren();
 
   if (!classes || classes.length === 0) {
     const emptyOption = document.createElement('option');
@@ -101,27 +125,38 @@ export async function populateClassCheckboxes(containerEl, selectedNames = [], i
     : (selectedNames && typeof selectedNames[Symbol.iterator] === 'function' ? Array.from(selectedNames) : []);
   const selectedSet = new Set(safeNames);
 
+  containerEl.replaceChildren();
+
   if (!classes || classes.length === 0) {
-    containerEl.innerHTML = '<span class="cal-empty-desc">No active classes available. Please add classes first.</span>';
+    const emptySpan = document.createElement('span');
+    emptySpan.className = 'cal-empty-desc';
+    emptySpan.textContent = 'No active classes available. Please add classes first.';
+    containerEl.appendChild(emptySpan);
     return;
   }
 
-  containerEl.innerHTML = classes.map((cls) => {
-    const isChecked = selectedSet.has(cls.name) ? 'checked' : '';
-    return `
-      <label class="checkbox-item">
-        <input type="checkbox" name="${inputName}" value="${cls.name}" ${isChecked}>
-        <span>🏛️ ${cls.name}</span>
-      </label>
-    `;
-  }).join('');
+  classes.forEach((cls) => {
+    const label = document.createElement('label');
+    label.className = 'checkbox-item';
 
-  if (onChange) {
-    const checkboxes = containerEl.querySelectorAll(`input[name="${inputName}"]`);
-    checkboxes.forEach((cb) => {
-      cb.addEventListener('change', onChange);
-      cb.addEventListener('blur', onChange);
-    });
-  }
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.name = inputName;
+    input.value = cls.name;
+    if (selectedSet.has(cls.name)) {
+      input.checked = true;
+    }
+
+    const span = document.createElement('span');
+    span.textContent = `🏛️ ${cls.name}`;
+
+    if (typeof onChange === 'function') {
+      input.addEventListener('change', onChange);
+      input.addEventListener('blur', onChange);
+    }
+
+    label.append(input, span);
+    containerEl.appendChild(label);
+  });
 }
 

@@ -1,20 +1,25 @@
 // Main Calendar Module Controller
-import { calendarState } from './calendarState.js';
+import {
+  getCalendarState,
+  setCalendarViewMonth,
+  navigateCalendarMonth,
+  setSelectedDate,
+  setActiveFilter,
+  resetCalendarToToday,
+} from './calendarState.js';
 import { renderTermProgressWidget } from './termProgress.js';
 import { renderCalendarGrid } from './calendarGrid.js';
 import { renderCalendarSidebar } from './calendarSidebar.js';
-import { formatCalendarHeaderDate, toISODateString } from '../../utils/dateUtils.js';
+import { formatCalendarHeaderDate } from '../../utils/dateUtils.js';
 
 export function refreshCalendarViews() {
   const monthTitle = document.querySelector('#calMonthYearTitle');
   if (monthTitle) {
-    monthTitle.textContent = formatCalendarHeaderDate(
-      calendarState.viewYear,
-      calendarState.viewMonth,
-    );
+    const { viewYear, viewMonth } = getCalendarState();
+    monthTitle.textContent = formatCalendarHeaderDate(viewYear, viewMonth);
   }
   renderTermProgressWidget();
-  renderCalendarGrid((newSelectedDate) => {
+  renderCalendarGrid((_newSelectedDate) => {
     renderCalendarSidebar();
   });
   renderCalendarSidebar();
@@ -34,38 +39,21 @@ export function initCalendarModule() {
   // 2. Navigation Handlers
   if (prevMonthBtn) {
     prevMonthBtn.addEventListener('click', () => {
-      if (calendarState.viewMonth === 0) {
-        calendarState.viewMonth = 11;
-        calendarState.viewYear -= 1;
-      } else {
-        calendarState.viewMonth -= 1;
-      }
+      navigateCalendarMonth(-1);
       refreshCalendarViews();
     });
   }
 
   if (nextMonthBtn) {
     nextMonthBtn.addEventListener('click', () => {
-      if (calendarState.viewMonth === 11) {
-        calendarState.viewMonth = 0;
-        calendarState.viewYear += 1;
-      } else {
-        calendarState.viewMonth += 1;
-      }
+      navigateCalendarMonth(1);
       refreshCalendarViews();
     });
   }
 
   if (todayBtn) {
     todayBtn.addEventListener('click', () => {
-      const now = new Date();
-      calendarState.viewYear = now.getFullYear();
-      calendarState.viewMonth = now.getMonth();
-      calendarState.selectedDate = toISODateString(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-      );
+      resetCalendarToToday();
       refreshCalendarViews();
     });
   }
@@ -79,7 +67,7 @@ export function initCalendarModule() {
       const filterVal = pill.dataset.filter;
       if (!filterVal) return;
 
-      calendarState.activeFilter = filterVal;
+      setActiveFilter(filterVal);
 
       // Update active style on pills
       filterPillsContainer.querySelectorAll('.cal-filter-pill').forEach((btn) => {
@@ -100,10 +88,9 @@ export function initCalendarModule() {
 
       const dateStr = item.dataset.date;
       if (dateStr) {
-        const [y, m, d] = dateStr.split('-').map(Number);
-        calendarState.viewYear = y;
-        calendarState.viewMonth = m - 1;
-        calendarState.selectedDate = dateStr;
+        const [y, m] = dateStr.split('-').map(Number);
+        setCalendarViewMonth(y, m - 1);
+        setSelectedDate(dateStr);
         refreshCalendarViews();
       }
     });

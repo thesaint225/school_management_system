@@ -1,8 +1,13 @@
-import { students } from './data/studentsData.js';
+import { students, setStudents, removeStudentById } from './data/studentsData.js';
 import { fetchStudentsFromDb } from './api/studentApi.js';
-import { teachers } from './data/teachersData.js';
+import { teachers, setTeachers, removeTeacherById } from './data/teachersData.js';
 import { fetchTeachersFromDb } from './api/teacherApi.js';
-import { academicTerms, calendarItems, updateCalendarItems, updateAcademicTerms } from './data/calendarData.js';
+import {
+  getAcademicTerms,
+  getCalendarItems,
+  updateCalendarItems,
+  updateAcademicTerms,
+} from './data/calendarData.js';
 import { fetchCalendarEventsFromDb, fetchAcademicTermsFromDb } from './api/calendarApi.js';
 import {
   formatSchoolTime,
@@ -93,8 +98,8 @@ export function renderDashboardOverview() {
   // D. Academic Term Stat Card
   const dashTermName = document.querySelector('#dashTermName');
   const dashTermRange = document.querySelector('#dashTermRange');
-  const activeTerm =
-    academicTerms.find((t) => t.status === 'Active') || academicTerms[0];
+  const terms = getAcademicTerms();
+  const activeTerm = terms.find((t) => t.status === 'Active') || terms[0];
   if (dashTermName && activeTerm) {
     dashTermName.textContent = activeTerm.name.split(' (')[0];
   }
@@ -115,34 +120,48 @@ export function renderDashboardOverview() {
       now.getDate(),
     );
 
-    const upcoming = calendarItems
+    const upcoming = getCalendarItems()
       .filter((item) => item.date >= todayISO)
       .sort((a, b) => (a.date > b.date ? 1 : -1))
       .slice(0, 3);
 
+    dashUpcomingList.replaceChildren();
+
     if (upcoming.length === 0) {
-      dashUpcomingList.innerHTML = `<p class="cal-empty-desc">No more upcoming scheduled items this term.</p>`;
+      const emptyP = document.createElement('p');
+      emptyP.className = 'cal-empty-desc';
+      emptyP.textContent = 'No more upcoming scheduled items this term.';
+      dashUpcomingList.appendChild(emptyP);
     } else {
-      dashUpcomingList.innerHTML = upcoming
-        .map((item) => {
-          const [year, month, day] = item.date.split('-');
-          const monthName = new Intl.DateTimeFormat('en-US', { month: 'short' })
-            .format(new Date(Number(year), Number(month) - 1, Number(day)))
-            .toUpperCase();
-          return `
-            <div class="upcoming-item" data-date="${item.date}">
-              <div class="event-date">
-                <strong>${Number(day)}</strong>
-                <span>${monthName}</span>
-              </div>
-              <div class="event-info">
-                <strong>${item.title}</strong>
-                <span>${item.location} • ${item.time}</span>
-              </div>
-            </div>
-          `;
-        })
-        .join('');
+      upcoming.forEach((item) => {
+        const [year, month, day] = item.date.split('-');
+        const monthName = new Intl.DateTimeFormat('en-US', { month: 'short' })
+          .format(new Date(Number(year), Number(month) - 1, Number(day)))
+          .toUpperCase();
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'upcoming-item';
+        itemDiv.dataset.date = item.date;
+
+        const dateDiv = document.createElement('div');
+        dateDiv.className = 'event-date';
+        const dayStrong = document.createElement('strong');
+        dayStrong.textContent = String(Number(day));
+        const monthSpan = document.createElement('span');
+        monthSpan.textContent = monthName;
+        dateDiv.append(dayStrong, monthSpan);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'event-info';
+        const titleStrong = document.createElement('strong');
+        titleStrong.textContent = item.title;
+        const metaSpan = document.createElement('span');
+        metaSpan.textContent = `${item.location} • ${item.time}`;
+        infoDiv.append(titleStrong, metaSpan);
+
+        itemDiv.append(dateDiv, infoDiv);
+        dashUpcomingList.appendChild(itemDiv);
+      });
     }
   }
 }
@@ -150,10 +169,7 @@ export function renderDashboardOverview() {
 // 3. Initialize Student Modal Controls
 const handleStudentModalChange = (student, action) => {
   if (action === 'delete' && student) {
-    const idx = students.findIndex((s) => s.id === student.id);
-    if (idx !== -1) {
-      students.splice(idx, 1);
-    }
+    removeStudentById(student.id);
   }
   refreshAllStudentViews();
 };
@@ -184,10 +200,7 @@ let teacherRosterController = null;
 
 const handleTeacherModalChange = (teacher, action) => {
   if (action === 'delete' && teacher) {
-    const idx = teachers.findIndex((t) => t.id === teacher.id);
-    if (idx !== -1) {
-      teachers.splice(idx, 1);
-    }
+    removeTeacherById(teacher.id);
   }
   refreshAllTeacherViews();
 };
@@ -289,8 +302,7 @@ async function syncClassesFromDatabase() {
 async function syncStudentsFromDatabase() {
   const dbStudents = await fetchStudentsFromDb();
   if (dbStudents && Array.isArray(dbStudents) && dbStudents.length > 0) {
-    students.length = 0;
-    students.push(...dbStudents);
+    setStudents(dbStudents);
   }
   refreshAllStudentViews();
 }
@@ -317,8 +329,7 @@ async function bootstrapDataFromDatabase() {
   // D. Teachers
   const dbTeachers = await fetchTeachersFromDb();
   if (dbTeachers && Array.isArray(dbTeachers) && dbTeachers.length > 0) {
-    teachers.length = 0;
-    teachers.push(...dbTeachers);
+    setTeachers(dbTeachers);
     console.log(`🚀 Teacher Directory successfully synced with ${teachers.length} teachers from database.`);
   }
   refreshAllTeacherViews();
@@ -331,17 +342,17 @@ async function bootstrapDataFromDatabase() {
   const dbTerms = await fetchAcademicTermsFromDb();
   if (dbTerms && Array.isArray(dbTerms) && dbTerms.length > 0) {
     updateAcademicTerms(dbTerms);
-    console.log(`🚀 Academic Terms successfully synced with ${academicTerms.length} terms from database.`);
+    console.log(`🚀 Academic Terms successfully synced with ${getAcademicTerms().length} terms from database.`);
   }
 
   const dbEvents = await fetchCalendarEventsFromDb();
   if (dbEvents && Array.isArray(dbEvents) && dbEvents.length > 0) {
     updateCalendarItems(dbEvents);
-    console.log(`🚀 Academic Calendar successfully synced with ${calendarItems.length} events from database.`);
+    console.log(`🚀 Academic Calendar successfully synced with ${getCalendarItems().length} events from database.`);
   }
 
   // Refresh dashboard and calendar views with synced database records
-  initDashboard();
+  renderDashboardOverview();
   refreshCalendarViews();
 }
 

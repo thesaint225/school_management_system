@@ -1,10 +1,11 @@
 // Academic Term Progress & Status Tracker
-import { academicTerms } from '../../data/calendarData.js';
+import { getAcademicTerms } from '../../data/calendarData.js';
 import { formatTermRange, calculateDaysBetween } from '../../utils/dateUtils.js';
 
 export function getActiveAcademicTerm() {
-  const active = academicTerms.find((t) => t.status === 'Active');
-  return active || academicTerms[0];
+  const terms = getAcademicTerms();
+  const active = terms.find((t) => t.status === 'Active');
+  return active || terms[0];
 }
 
 export function calculateTermProgress(term = getActiveAcademicTerm()) {

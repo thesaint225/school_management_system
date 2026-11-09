@@ -1,6 +1,6 @@
 // Calendar 7-Column Grid Matrix Generator
-import { calendarState } from './calendarState.js';
-import { calendarItems } from '../../data/calendarData.js';
+import { getCalendarState, setSelectedDate } from './calendarState.js';
+import { getCalendarItems } from '../../data/calendarData.js';
 import { toISODateString } from '../../utils/dateUtils.js';
 
 export function getMonthDaysMatrix(year, monthIndex) {
@@ -57,7 +57,7 @@ export function getMonthDaysMatrix(year, monthIndex) {
 }
 
 export function filterCalendarItemsByDateAndCategory(dateString, categoryFilter) {
-  return calendarItems.filter((item) => {
+  return getCalendarItems().filter((item) => {
     const matchesDate = item.date === dateString;
     const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
     return matchesDate && matchesCategory;
@@ -68,7 +68,7 @@ export function renderCalendarGrid(onSelectDateCallback) {
   const gridContainer = document.querySelector('#calGridDays');
   if (!gridContainer) return;
 
-  const { viewYear, viewMonth, selectedDate, activeFilter } = calendarState;
+  const { viewYear, viewMonth, selectedDate, activeFilter } = getCalendarState();
   const cells = getMonthDaysMatrix(viewYear, viewMonth);
 
   const now = new Date();
@@ -123,7 +123,7 @@ export function renderCalendarGrid(onSelectDateCallback) {
     if (!dayBtn) return;
     const clickedDate = dayBtn.dataset.date;
     if (clickedDate) {
-      calendarState.selectedDate = clickedDate;
+      setSelectedDate(clickedDate);
       renderCalendarGrid(onSelectDateCallback);
       if (onSelectDateCallback) {
         onSelectDateCallback(clickedDate);

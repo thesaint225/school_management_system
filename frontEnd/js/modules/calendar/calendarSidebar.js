@@ -1,6 +1,6 @@
 // Calendar Sidebar: Selected Date Agenda & Upcoming Next Widget
-import { calendarState } from './calendarState.js';
-import { calendarItems } from '../../data/calendarData.js';
+import { getCalendarState } from './calendarState.js';
+import { getCalendarItems } from '../../data/calendarData.js';
 import { formatAgendaDate, calculateDaysBetween, toISODateString } from '../../utils/dateUtils.js';
 import { ICONS, getCategoryIcon } from '../../utils/icons.js';
 
@@ -53,7 +53,7 @@ export function renderUpcomingHighlights() {
   const todayISO = toISODateString(now.getFullYear(), now.getMonth(), now.getDate());
 
   // Filter items happening on or after today, sorted by date ascending
-  const upcomingItems = calendarItems
+  const upcomingItems = getCalendarItems()
     .filter((item) => item.date >= todayISO)
     .sort((a, b) => (a.date > b.date ? 1 : -1))
     .slice(0, 3);
@@ -99,13 +99,13 @@ export function renderCalendarSidebar() {
   const agendaListContainer = document.querySelector('#calAgendaList');
   if (!selectedDateHeader || !agendaListContainer) return;
 
-  const { selectedDate, activeFilter } = calendarState;
+  const { selectedDate, activeFilter } = getCalendarState();
 
   // Header
   selectedDateHeader.textContent = formatAgendaDate(selectedDate);
 
   // Filter items matching the selected date and active category filter
-  const itemsForDay = calendarItems.filter((item) => {
+  const itemsForDay = getCalendarItems().filter((item) => {
     const matchesDate = item.date === selectedDate;
     const matchesCategory = activeFilter === 'all' || item.category === activeFilter;
     return matchesDate && matchesCategory;

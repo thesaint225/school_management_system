@@ -54,6 +54,9 @@ Detailed step-by-step workflows live in `.agents/skills/`. **Always activate and
 - **Backend API, Runtime Validation & Input Contracts (`data-contracts-and-api-validation`)**:
   - The backend API is the single source of truth (never hardcode frontend mock data when backend endpoints exist). Validate all untrusted inputs and API responses at runtime (`apiValidator.js`), enforce finite domain ranges without silent defaults, and never leak student PII in logs.
   - Follow `.agents/skills/data-contracts-and-api-validation/SKILL.md` whenever integrating backend APIs, writing validators or domain functions, or authoring boundary tests.
+- **JavaScript Encapsulation & State Protection (`javascript-encapsulation-protection`)**:
+  - Keep internal module state private, prefer controlled public getters/mutators with input validation over exporting mutable objects/arrays directly, prevent shared-reference mutations (`structuredClone()` or shallow copies where appropriate), and never treat frontend encapsulation as a substitute for Spring Security and backend role/ownership checks.
+  - Follow `.agents/skills/javascript-encapsulation-protection/SKILL.md` whenever creating, inspecting, or refactoring JavaScript modules, state stores, or caches, and write isolation tests to verify external mutations cannot corrupt internal state.
 - **Frontend Browser QA (`playwright-browser-qa`)**:
   - Verify real user outcomes (not just clicks) and produce an honest, evidence-based QA report for frontend changes.
   - Follow `.agents/skills/playwright-browser-qa/SKILL.md` whenever verifying frontend UI changes with Playwright MCP.
