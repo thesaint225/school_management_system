@@ -2,10 +2,10 @@
 // Connects to Spring Boot API via subjectApi.js and handles accessible validation per AGENTS.md
 
 import { updateSubjectInDb, deleteOrDeactivateSubjectInDb } from '../../api/subjectApi.js';
-import { teachers } from '../../data/teachersData.js';
-import { getInitials } from '../students/studentModal.js';
+import { getTeachers } from '../../data/teachersData.js';
+import { getInitials } from '../../utils/domUtils.js';
 
-export const SUBJECT_DEPARTMENTS = [
+const SUBJECT_DEPARTMENTS = Object.freeze([
   'Mathematics & Computing',
   'Natural Sciences',
   'Languages',
@@ -15,12 +15,12 @@ export const SUBJECT_DEPARTMENTS = [
   'Business & Accounting',
   'Arts & Design',
   'Physical Education',
-];
+]);
 
 let activeSubject = null;
 let onSubjectUpdateCallback = null;
 
-export function renderSubjectDetails(subject) {
+function renderSubjectDetails(subject) {
   const isActive = subject.active !== false;
   const statusBadgeClass = isActive ? 'status-badge-active' : 'status-badge-danger';
   const statusText = isActive ? 'Active' : 'Archived / Inactive';
@@ -28,7 +28,7 @@ export function renderSubjectDetails(subject) {
   const department = subject.department || 'General Studies';
   const description = subject.description || 'No detailed syllabus or description provided.';
 
-  const assignedTeachers = teachers.filter((t) => (t.subjects || []).includes(subject.name));
+  const assignedTeachers = getTeachers().filter((t) => (t.subjects || []).includes(subject.name));
   const instructorsHTML = assignedTeachers.length > 0
     ? assignedTeachers.map((t) => {
         const initials = getInitials(t.name || `${t.firstName || ''} ${t.lastName || ''}`);
@@ -107,7 +107,7 @@ export function renderSubjectDetails(subject) {
   `;
 }
 
-export function renderSubjectDeleteConfirmation(subject) {
+function renderSubjectDeleteConfirmation(subject) {
   const isActive = subject.active !== false;
   const subjectCode = subject.code || `SUB-${subject.id}`;
   return `
@@ -146,7 +146,7 @@ export function renderSubjectDeleteConfirmation(subject) {
   `;
 }
 
-export function renderSubjectEditForm(subject) {
+function renderSubjectEditForm(subject) {
   const subjectCode = subject.code || `SUB-${subject.id}`;
 
   return `
@@ -459,7 +459,7 @@ export function openSubjectModal(subject, mode = 'view', updateCallback = null) 
   document.body.classList.add('modal-open');
 }
 
-export function closeSubjectModal() {
+function closeSubjectModal() {
   const modal = document.querySelector('#subjectModal');
   if (!modal) return;
   modal.classList.remove('active');

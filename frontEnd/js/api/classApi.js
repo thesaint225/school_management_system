@@ -5,6 +5,7 @@ import {
   validateStudentList,
   validateDeleteClassResult,
 } from '../utils/apiValidator.js';
+import { extractApiErrorMessage } from '../utils/domUtils.js';
 
 // classApi.js - REST API Client connecting Frontend to Spring Boot & Database for Classes
 const API_BASE_URL = 'http://localhost:8080/api/classes';
@@ -97,15 +98,7 @@ export async function createClassInDb(classDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const raw = await response.json();
@@ -131,15 +124,7 @@ export async function updateClassInDb(id, classDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const raw = await response.json();
@@ -159,15 +144,7 @@ export async function deleteOrDeactivateClassInDb(id) {
   });
 
   if (!response.ok && response.status !== 204) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   try {
@@ -195,15 +172,7 @@ export async function assignStudentToClassInDb(classId, studentId) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const raw = await response.json();
@@ -225,17 +194,20 @@ export async function removeStudentFromClassInDb(classId, studentId) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const raw = await response.json();
   return validateStudent(raw, `DELETE /api/classes/${classId}/students/${studentId}`);
 }
+
+export const ClassApi = Object.freeze({
+  fetchAll: fetchClassesFromDb,
+  fetchById: fetchClassByIdFromDb,
+  fetchStudents: fetchClassStudentsFromDb,
+  create: createClassInDb,
+  update: updateClassInDb,
+  deleteOrDeactivate: deleteOrDeactivateClassInDb,
+  assignStudent: assignStudentToClassInDb,
+  removeStudent: removeStudentFromClassInDb,
+});

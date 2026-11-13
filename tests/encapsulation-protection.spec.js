@@ -33,17 +33,41 @@ import {
   updateCalendarItems,
   updateAcademicTerms,
 } from '../frontEnd/js/data/calendarData.js';
+import * as studentsMod from '../frontEnd/js/data/studentsData.js';
 import {
   getStudents,
   getStudentById,
   setStudents,
+  addStudent,
+  updateStudentInStore,
+  updateStudentDailyAttendance,
   removeStudentById,
 } from '../frontEnd/js/data/studentsData.js';
+import * as teachersMod from '../frontEnd/js/data/teachersData.js';
 import {
   getTeachers,
+  getTeacherById,
   setTeachers,
+  addTeacher,
+  updateTeacherInStore,
   removeTeacherById,
 } from '../frontEnd/js/data/teachersData.js';
+import { Student } from '../frontEnd/js/modules/students/index.js';
+import { Teacher } from '../frontEnd/js/modules/teachers/index.js';
+import { ClassRoom } from '../frontEnd/js/modules/classes/index.js';
+import { Subject } from '../frontEnd/js/modules/subjects/index.js';
+import { Attendance } from '../frontEnd/js/modules/attendance/index.js';
+import { Calendar } from '../frontEnd/js/modules/calendar/index.js';
+import { Results } from '../frontEnd/js/modules/results/index.js';
+import { Api } from '../frontEnd/js/api/index.js';
+import * as validatorMod from '../frontEnd/js/utils/apiValidator.js';
+import * as dateUtilsMod from '../frontEnd/js/utils/dateUtils.js';
+import { DomUtils } from '../frontEnd/js/utils/domUtils.js';
+import { Icons, ICONS } from '../frontEnd/js/utils/icons.js';
+import * as classRosterMod from '../frontEnd/js/modules/classes/classRoster.js';
+import * as subjectRosterMod from '../frontEnd/js/modules/subjects/subjectRoster.js';
+import * as studentRosterMod from '../frontEnd/js/modules/students/studentRoster.js';
+import * as topAchieversMod from '../frontEnd/js/modules/students/topAchievers.js';
 
 test.describe('JavaScript Encapsulation & State Protection Suite', () => {
 
@@ -112,6 +136,8 @@ test.describe('JavaScript Encapsulation & State Protection Suite', () => {
       expect(() => setSelectedDate(20260915)).toThrow(TypeError);
       expect(() => setSelectedDate('not-a-date')).toThrow(RangeError);
       expect(() => setSelectedDate('2026-13-45')).toThrow(RangeError);
+      expect(() => setSelectedDate('2026-02-31')).toThrow(RangeError);
+      expect(() => setSelectedDate('2026-04-31')).toThrow(RangeError);
 
       // Invalid activeFilter
       expect(() => setActiveFilter(123)).toThrow(TypeError);
@@ -168,7 +194,9 @@ test.describe('JavaScript Encapsulation & State Protection Suite', () => {
       setAttendanceCurrentPage(2);
 
       expect(() => setAttendanceSearchQuery(null)).toThrow(TypeError);
-      expect(() => setAttendanceClassFilter('')).toThrow(TypeError);
+      expect(() => setAttendanceClassFilter(123)).toThrow(TypeError);
+      expect(() => setAttendanceClassFilter('')).toThrow(RangeError);
+      expect(() => setAttendanceClassFilter('   ')).toThrow(RangeError);
       expect(() => setAttendanceStatusFilter(123)).toThrow(TypeError);
       expect(() => setAttendanceStatusFilter('Skipped')).toThrow(RangeError);
       expect(() => setAttendanceGenderFilter('InvalidGender')).toThrow(RangeError);
@@ -248,13 +276,15 @@ test.describe('JavaScript Encapsulation & State Protection Suite', () => {
       expect(secondRead[0].name).toBe('Mathematics');
     });
 
-    test('cache setters and getters validate argument types', async () => {
+    test('cache setters and getters validate argument types and domain ranges', async () => {
       expect(() => setClassCache('not-an-array')).toThrow(TypeError);
       expect(() => setClassCache([null])).toThrow(TypeError);
-      expect(() => setClassCache([{ id: 1, name: '   ' }])).toThrow(TypeError);
+      expect(() => setClassCache([{ id: 1, name: 123 }])).toThrow(TypeError);
+      expect(() => setClassCache([{ id: 1, name: '   ' }])).toThrow(RangeError);
 
       expect(() => setSubjectCache(null)).toThrow(TypeError);
-      expect(() => setSubjectCache([{ id: 1, name: '' }])).toThrow(TypeError);
+      expect(() => setSubjectCache([{ id: 1, name: 456 }])).toThrow(TypeError);
+      expect(() => setSubjectCache([{ id: 1, name: '' }])).toThrow(RangeError);
 
       await expect(getActiveClasses('true')).rejects.toThrow(TypeError);
       await expect(getActiveSubjects(1)).rejects.toThrow(TypeError);
@@ -281,13 +311,25 @@ test.describe('JavaScript Encapsulation & State Protection Suite', () => {
       // Validate mutator rejection on bad inputs
       expect(() => updateCalendarItems(null)).toThrow(TypeError);
       expect(() => updateCalendarItems([])).toThrow(RangeError);
+      expect(() => updateCalendarItems([{ title: 123, date: '2026-09-15' }])).toThrow(TypeError);
+      expect(() => updateCalendarItems([{ title: '   ', date: '2026-09-15' }])).toThrow(RangeError);
       expect(() => updateCalendarItems([{ title: 'Valid', date: 'bad-date' }])).toThrow(RangeError);
+      expect(() => updateCalendarItems([{ title: 'Valid', date: '1' }])).toThrow(RangeError);
+      expect(() => updateCalendarItems([{ title: 'Valid', date: '2026-02-31' }])).toThrow(RangeError);
+      expect(() => updateCalendarItems([{ title: 'Valid', date: '2026-09-15', category: 'invalid-cat' }])).toThrow(RangeError);
 
       expect(() => updateAcademicTerms('invalid')).toThrow(TypeError);
       expect(() => updateAcademicTerms([])).toThrow(RangeError);
+      expect(() =>
+        updateAcademicTerms([
+          { name: 'Inverted Term', startDate: '2026-12-18', endDate: '2026-09-08' },
+        ]),
+      ).toThrow(RangeError);
     });
 
-    test('studentsData: getStudents and getStudentById deep-clone nested guardian, dailyAttendance, and subjects', () => {
+    test('studentsData: raw array is private and getters/mutators deep-clone and validate records', () => {
+      expect(studentsMod.students).toBeUndefined();
+
       const student1 = getStudentById(1);
       expect(student1).not.toBeNull();
       const originalGuardianName = student1.guardian.name;
@@ -307,15 +349,47 @@ test.describe('JavaScript Encapsulation & State Protection Suite', () => {
       expect(checkAgain.subjects).toHaveLength(originalSubjectsCount);
       expect(checkAgain.dailyAttendance.status).toBe(originalAttendanceStatus);
 
-      // Verify invalid IDs throw TypeError
+      // Verify addStudent, updateStudentInStore, and updateStudentDailyAttendance isolate state
+      const newStudentInput = {
+        id: 999,
+        name: 'Test Student',
+        class: 'Form 1A',
+        subjects: ['Mathematics'],
+        guardian: { name: 'Parent One' },
+        dailyAttendance: { status: 'Present', timestamp: '08:00 AM' },
+      };
+      const added = addStudent(newStudentInput);
+      newStudentInput.name = 'MUTATED INPUT AFTER ADD';
+      added.subjects.push('Hacked Subject');
+
+      expect(getStudentById(999).name).toBe('Test Student');
+      expect(getStudentById(999).subjects).toEqual(['Mathematics']);
+
+      updateStudentInStore(999, { name: 'Updated Student Name' });
+      expect(getStudentById(999).name).toBe('Updated Student Name');
+
+      updateStudentDailyAttendance(999, 'Late', '08:45 AM');
+      expect(getStudentById(999).dailyAttendance).toEqual({
+        status: 'Late',
+        timestamp: '08:45 AM',
+      });
+      expect(() => updateStudentDailyAttendance(999, 'InvalidStatus', '08:45 AM')).toThrow(RangeError);
+
+      expect(removeStudentById(999)).toBe(true);
+      expect(getStudentById(999)).toBeNull();
+
+      // Verify invalid IDs throw TypeError for wrong type and RangeError for out-of-range
       expect(() => getStudentById('1')).toThrow(TypeError);
-      expect(() => getStudentById(0)).toThrow(TypeError);
-      expect(() => getStudentById(-5)).toThrow(TypeError);
+      expect(() => getStudentById(0)).toThrow(RangeError);
+      expect(() => getStudentById(-5)).toThrow(RangeError);
       expect(() => setStudents('not-an-array')).toThrow(TypeError);
       expect(() => removeStudentById('bad')).toThrow(TypeError);
+      expect(() => removeStudentById(0)).toThrow(RangeError);
     });
 
-    test('teachersData: setTeachers and getTeachers isolate internal teacher class and subject allocations', () => {
+    test('teachersData: raw array is private and setTeachers/getTeachers/addTeacher/updateTeacherInStore isolate state', () => {
+      expect(teachersMod.teachers).toBeUndefined();
+
       const sampleTeachers = [
         {
           id: 101,
@@ -340,8 +414,105 @@ test.describe('JavaScript Encapsulation & State Protection Suite', () => {
       retrieved[0].subjects.length = 0;
       expect(getTeachers()[0].subjects).toEqual(['Mathematics', 'Physics']);
 
+      // Test addTeacher and updateTeacherInStore
+      const addedTeacher = addTeacher({
+        id: 102,
+        firstName: 'Ama',
+        lastName: 'Mensah',
+        subjects: ['Biology'],
+        classes: ['Form 1B'],
+      });
+      addedTeacher.classes.push('Hacked Class');
+      expect(getTeacherById(102).classes).toEqual(['Form 1B']);
+
+      updateTeacherInStore(102, { department: 'Natural Sciences' });
+      expect(getTeacherById(102).department).toBe('Natural Sciences');
+
+      expect(() => getTeacherById('102')).toThrow(TypeError);
+      expect(() => getTeacherById(0)).toThrow(RangeError);
+
       expect(removeTeacherById(101)).toBe(true);
+      expect(removeTeacherById(102)).toBe(true);
       expect(getTeachers()).toHaveLength(0);
+    });
+  });
+
+  // ==========================================================================
+  // 5. ES Module Visibility & Frozen Domain Namespaces
+  // ==========================================================================
+  test.describe('5. ES Module Visibility & Frozen Domain Namespaces', () => {
+    test('all domain and utility namespaces are frozen with Object.freeze()', () => {
+      const namespaces = [
+        Student,
+        Teacher,
+        ClassRoom,
+        Subject,
+        Attendance,
+        Calendar,
+        Results,
+        Api,
+        Api.students,
+        Api.teachers,
+        Api.classes,
+        Api.subjects,
+        Api.results,
+        Api.calendar,
+        validatorMod.Validator,
+        dateUtilsMod.DateUtils,
+        DomUtils,
+        Icons,
+        ICONS,
+      ];
+
+      namespaces.forEach((ns) => {
+        expect(Object.isFrozen(ns)).toBe(true);
+      });
+
+      // Attempting to overwrite a method on a frozen namespace throws TypeError in ES module strict mode
+      expect(() => {
+        Student.getAll = () => [];
+      }).toThrow(TypeError);
+    });
+
+    test('ClassRoom and Subject namespaces encapsulate directory stores with deep cloning and validation', () => {
+      const initialClasses = [{ id: 10, name: 'Form 1A', active: true }];
+      ClassRoom.setAll(initialClasses);
+      initialClasses[0].name = 'MUTATED_CLASS';
+      expect(ClassRoom.getAll()[0].name).toBe('Form 1A');
+
+      const addedCls = ClassRoom.add({ id: 11, name: 'Form 1B', active: true });
+      addedCls.name = 'MUTATED_ADDED';
+      expect(ClassRoom.getAll()).toHaveLength(2);
+      expect(ClassRoom.removeById(11)).toBe(true);
+      expect(ClassRoom.getAll()).toHaveLength(1);
+      expect(() => ClassRoom.removeById('bad')).toThrow(TypeError);
+      expect(() => ClassRoom.removeById(0)).toThrow(RangeError);
+
+      const initialSubjects = [{ id: 20, name: 'Chemistry', code: 'CHM101', active: true }];
+      Subject.setAll(initialSubjects);
+      initialSubjects[0].name = 'MUTATED_SUBJECT';
+      expect(Subject.getAll()[0].name).toBe('Chemistry');
+
+      const addedSub = Subject.add({ id: 21, name: 'Biology', code: 'BIO101', active: true });
+      addedSub.name = 'MUTATED_ADDED_SUB';
+      expect(Subject.getAll()).toHaveLength(2);
+      expect(Subject.removeById(21)).toBe(true);
+      expect(Subject.getAll()).toHaveLength(1);
+      expect(() => Subject.removeById('bad')).toThrow(TypeError);
+      expect(() => Subject.removeById(0)).toThrow(RangeError);
+    });
+
+    test('internal helper functions and options remain unexported (private to their ES modules)', () => {
+      expect(validatorMod.isObject).toBeUndefined();
+      expect(validatorMod.validateSubjectScoreItem).toBeUndefined();
+      expect(dateUtilsMod.termRangeOptions).toBeUndefined();
+      expect(classRosterMod.classCardHTML).toBeUndefined();
+      expect(classRosterMod.renderClassGrid).toBeUndefined();
+      expect(subjectRosterMod.subjectCardHTML).toBeUndefined();
+      expect(subjectRosterMod.renderSubjectGrid).toBeUndefined();
+      expect(studentRosterMod.studentInfo).toBeUndefined();
+      expect(topAchieversMod.compareStudentGpa).toBeUndefined();
+      expect(topAchieversMod.renderTopAchievers).toBeUndefined();
     });
   });
 });

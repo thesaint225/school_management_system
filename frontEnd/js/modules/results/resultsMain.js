@@ -2,7 +2,7 @@
 import { saveScoreToDb, fetchStudentReportFromDb, downloadReportPdfFromDb, fetchAllReportsFromDb } from '../../api/resultApi.js';
 import { fetchStudentsFromDb } from '../../api/studentApi.js';
 import { fetchSubjectsFromDb } from '../../api/subjectApi.js';
-import { students as localStudents } from '../../data/studentsData.js';
+import { getStudents } from '../../data/studentsData.js';
 
 let cachedStudents = [];
 let cachedSubjects = [];
@@ -155,7 +155,7 @@ export async function initResultsModule() {
 
 async function loadDropdownData() {
   const dbStudents = await fetchStudentsFromDb();
-  cachedStudents = (dbStudents && dbStudents.length > 0) ? dbStudents : localStudents;
+  cachedStudents = (dbStudents && dbStudents.length > 0) ? dbStudents : getStudents();
 
   const dbSubjects = await fetchSubjectsFromDb();
   cachedSubjects = dbSubjects || [];
@@ -270,7 +270,7 @@ function populateSubjectDropdown(subjects) {
   });
 }
 
-export async function loadAndDisplayReport(studentId) {
+async function loadAndDisplayReport(studentId) {
   currentReportStudentId = studentId;
   const container = document.getElementById('studentReportCardContainer');
   if (container) {
@@ -291,7 +291,7 @@ export async function loadAndDisplayReport(studentId) {
   }
 }
 
-export function renderReportCard(report) {
+function renderReportCard(report) {
   const container = document.getElementById('studentReportCardContainer');
   if (!container) return;
 

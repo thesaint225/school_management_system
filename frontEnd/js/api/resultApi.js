@@ -1,4 +1,5 @@
 import { validateStudentReport, validateStudentReportList } from '../utils/apiValidator.js';
+import { extractApiErrorMessage } from '../utils/domUtils.js';
 
 // resultApi.js - REST API Client connecting Frontend to Spring Boot Results & PDF generation
 const API_BASE_URL = 'http://localhost:8080/api/results';
@@ -20,15 +21,7 @@ export async function saveScoreToDb(scoreEntryDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const rawReport = await response.json();
@@ -124,3 +117,10 @@ export async function downloadReportPdfFromDb(studentId, studentName = 'student'
     alert('Failed to generate PDF report card. Please ensure the backend is running.');
   }
 }
+
+export const ResultApi = Object.freeze({
+  saveScore: saveScoreToDb,
+  fetchStudentReport: fetchStudentReportFromDb,
+  fetchAllReports: fetchAllReportsFromDb,
+  downloadReportPdf: downloadReportPdfFromDb,
+});

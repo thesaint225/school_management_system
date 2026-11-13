@@ -1,6 +1,7 @@
 // classRoster.js - Class Directory, Search, Filter, & Grid Roster Module
+import { getClasses } from './classUtils.js';
 
-export function classCardHTML(cls) {
+function classCardHTML(cls) {
   const isActive = cls.active !== false;
   const statusBadgeClass = isActive ? 'status-badge-active' : 'status-badge-danger';
   const statusText = isActive ? 'Active' : 'Archived / Inactive';
@@ -33,7 +34,7 @@ export function classCardHTML(cls) {
   `;
 }
 
-export function renderClassGrid(classList, containerEl, onClassClick) {
+function renderClassGrid(classList, containerEl) {
   if (!containerEl) return;
 
   if (!classList || classList.length === 0) {
@@ -50,7 +51,8 @@ export function renderClassGrid(classList, containerEl, onClassClick) {
   containerEl.innerHTML = classList.map(classCardHTML).join('');
 }
 
-export function initClassRoster(classes, onClassClick) {
+export function initClassRoster(arg1, arg2) {
+  const onClassClick = typeof arg1 === 'function' ? arg1 : arg2;
   const classListEl = document.querySelector('#classList');
   const classSearchInput = document.querySelector('#classSearchInput');
   const classStatusFilter = document.querySelector('#classStatusFilter');
@@ -58,7 +60,14 @@ export function initClassRoster(classes, onClassClick) {
   const activeClassesCount = document.querySelector('#activeClassesListCount');
   const totalEnrolledCount = document.querySelector('#totalEnrolledInClassesCount');
 
+  function getCurrentClasses() {
+    const storeClasses = getClasses();
+    if (storeClasses.length > 0) return storeClasses;
+    return Array.isArray(arg1) ? arg1 : [];
+  }
+
   function updateClassStats() {
+    const classes = getCurrentClasses();
     if (totalClassesCount) {
       totalClassesCount.textContent = classes.length;
     }
@@ -77,6 +86,7 @@ export function initClassRoster(classes, onClassClick) {
   function filterAndRender() {
     const searchQuery = (classSearchInput?.value || '').trim().toLowerCase();
     const selectedStatus = classStatusFilter?.value || 'All';
+    const classes = getCurrentClasses();
 
     const filtered = classes.filter((cls) => {
       const name = (cls.name || '').toLowerCase();
@@ -94,7 +104,7 @@ export function initClassRoster(classes, onClassClick) {
       return matchesSearch && matchesStatus;
     });
 
-    renderClassGrid(filtered, classListEl, onClassClick);
+    renderClassGrid(filtered, classListEl);
   }
 
   // Initial render
@@ -109,7 +119,7 @@ export function initClassRoster(classes, onClassClick) {
     const card = e.target.closest('.class-card');
     if (!card) return;
     const clickedId = Number(card.dataset.id);
-    const selected = classes.find((c) => c.id === clickedId);
+    const selected = getCurrentClasses().find((c) => c.id === clickedId);
     if (!selected) return;
 
     const actionBtn = e.target.closest('[data-action]');

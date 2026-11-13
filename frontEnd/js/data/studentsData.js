@@ -1,4 +1,5 @@
-export const students = [
+// Private internal student dataset — never exported directly
+const students = [
   {
     id: 1,
     name: 'Ama Mensah',
@@ -379,6 +380,35 @@ export const students = [
   },
 ];
 
+const ALLOWED_ATTENDANCE_STATUSES = new Set(['Present', 'Late', 'Absent', 'Unmarked']);
+
+function validateStudentId(id) {
+  if (typeof id !== 'number' || !Number.isInteger(id)) {
+    throw new TypeError(`Student id must be an integer, received ${typeof id === 'number' ? id : typeof id}.`);
+  }
+  if (id < 1) {
+    throw new RangeError(`Student id must be a positive integer (>= 1), received ${id}.`);
+  }
+}
+
+function validateStudentRecord(student, label = 'Student') {
+  if (!student || typeof student !== 'object' || Array.isArray(student)) {
+    throw new TypeError(`${label} must be a non-null object.`);
+  }
+  if (typeof student.id !== 'number' || !Number.isInteger(student.id)) {
+    throw new TypeError(`${label} must have an integer "id", received ${typeof student.id}.`);
+  }
+  if (student.id < 1) {
+    throw new RangeError(`${label} must have a positive integer "id", received ${student.id}.`);
+  }
+  if (typeof student.name !== 'string') {
+    throw new TypeError(`${label} must have a string "name", received ${typeof student.name}.`);
+  }
+  if (student.name.trim().length === 0) {
+    throw new RangeError(`${label} must have a non-empty string "name".`);
+  }
+}
+
 /**
  * Returns a defensive deep clone of all student records so external callers
  * cannot accidentally mutate nested objects (guardian, dailyAttendance, subjects).
@@ -394,9 +424,7 @@ export function getStudents() {
  * @returns {Object|null}
  */
 export function getStudentById(id) {
-  if (typeof id !== 'number' || !Number.isInteger(id) || id < 1) {
-    throw new TypeError(`Student id must be a positive integer, received ${typeof id === 'number' ? id : typeof id}.`);
-  }
+  validateStudentId(id);
   const found = students.find((s) => s.id === id);
   return found ? structuredClone(found) : null;
 }
@@ -410,19 +438,78 @@ export function setStudents(newStudents) {
     throw new TypeError(`Expected an array of students for setStudents, received ${typeof newStudents}.`);
   }
   newStudents.forEach((student, idx) => {
-    if (!student || typeof student !== 'object' || Array.isArray(student)) {
-      throw new TypeError(`Student at index ${idx} must be a non-null object.`);
-    }
-    if (typeof student.id !== 'number' || !Number.isInteger(student.id) || student.id < 1) {
-      throw new RangeError(`Student at index ${idx} must have a positive integer "id".`);
-    }
-    if (typeof student.name !== 'string' || student.name.trim().length === 0) {
-      throw new TypeError(`Student at index ${idx} must have a non-empty string "name".`);
-    }
+    validateStudentRecord(student, `Student at index ${idx}`);
   });
   const cloned = structuredClone(newStudents);
   students.length = 0;
   students.push(...cloned);
+}
+
+/**
+ * Appends a single validated, deep-cloned student record to the store.
+ * @param {Object} newStudent
+ * @returns {Object} Deep clone of the added student
+ */
+export function addStudent(newStudent) {
+  validateStudentRecord(newStudent, 'newStudent');
+  const cloned = structuredClone(newStudent);
+  students.push(cloned);
+  return structuredClone(cloned);
+}
+
+/**
+ * Updates an existing student record in the store with validated fields.
+ * @param {number} id
+ * @param {Object} updatedFields
+ * @returns {Object|null} Deep clone of the updated student, or null if not found
+ */
+export function updateStudentInStore(id, updatedFields) {
+  validateStudentId(id);
+  if (!updatedFields || typeof updatedFields !== 'object' || Array.isArray(updatedFields)) {
+    throw new TypeError(`updatedFields must be a non-null object, received ${typeof updatedFields}.`);
+  }
+  const idx = students.findIndex((s) => s.id === id);
+  if (idx === -1) return null;
+
+  const merged = {
+    ...students[idx],
+    ...structuredClone(updatedFields),
+    id,
+  };
+  validateStudentRecord(merged, `Updated student #${id}`);
+  students[idx] = merged;
+  return structuredClone(merged);
+}
+
+/**
+ * Updates a student's daily attendance status and timestamp in the store.
+ * @param {number} id
+ * @param {string} status - 'Present' | 'Late' | 'Absent' | 'Unmarked'
+ * @param {string|null} [timestamp=null]
+ * @returns {Object|null} Deep clone of the updated student, or null if not found
+ */
+export function updateStudentDailyAttendance(id, status, timestamp = null) {
+  validateStudentId(id);
+  if (typeof status !== 'string') {
+    throw new TypeError(`Attendance status must be a string, received ${typeof status}.`);
+  }
+  if (!ALLOWED_ATTENDANCE_STATUSES.has(status)) {
+    throw new RangeError(
+      `Invalid attendance status "${status}". Allowed: ${Array.from(ALLOWED_ATTENDANCE_STATUSES).join(', ')}.`
+    );
+  }
+  if (timestamp !== null && typeof timestamp !== 'string') {
+    throw new TypeError(`Attendance timestamp must be a string or null, received ${typeof timestamp}.`);
+  }
+
+  const student = students.find((s) => s.id === id);
+  if (!student) return null;
+
+  student.dailyAttendance = {
+    status,
+    timestamp,
+  };
+  return structuredClone(student);
 }
 
 /**
@@ -431,9 +518,7 @@ export function setStudents(newStudents) {
  * @returns {boolean} True if a student was removed, false otherwise
  */
 export function removeStudentById(id) {
-  if (typeof id !== 'number' || !Number.isInteger(id) || id < 1) {
-    throw new TypeError(`Student id must be a positive integer, received ${typeof id === 'number' ? id : typeof id}.`);
-  }
+  validateStudentId(id);
   const idx = students.findIndex((s) => s.id === id);
   if (idx !== -1) {
     students.splice(idx, 1);
@@ -441,3 +526,13 @@ export function removeStudentById(id) {
   }
   return false;
 }
+
+export const StudentStore = Object.freeze({
+  getAll: getStudents,
+  getById: getStudentById,
+  setAll: setStudents,
+  add: addStudent,
+  update: updateStudentInStore,
+  updateAttendance: updateStudentDailyAttendance,
+  removeById: removeStudentById,
+});

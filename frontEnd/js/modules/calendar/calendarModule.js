@@ -89,8 +89,8 @@ export function initCalendarModule() {
       const dateStr = item.dataset.date;
       if (dateStr) {
         const [y, m] = dateStr.split('-').map(Number);
-        setCalendarViewMonth(y, m - 1);
         setSelectedDate(dateStr);
+        setCalendarViewMonth(y, m - 1);
         refreshCalendarViews();
       }
     });

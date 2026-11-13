@@ -1,11 +1,16 @@
 // teacherRoster.js - Teacher Directory, Search, Filter, & Grid Roster Module
 
-import { getInitials, createSubjectPill } from './teacherModal.js';
+import { getInitials } from '../../utils/domUtils.js';
+import { getTeachers } from '../../data/teachersData.js';
 import { getActiveClasses } from '../classes/classUtils.js';
 
-export function teacherCardHTML(teacher) {
+function createSubjectPill(subject) {
+  return `<span class="subject-pill">${subject}</span>`;
+}
+
+function teacherCardHTML(teacher) {
   const fullName = teacher.name || `${teacher.firstName || ''} ${teacher.lastName || ''}`;
-  const initials = getInitials(fullName);
+  const initials = getInitials(fullName, 'TR');
   const status = teacher.employmentStatus || 'Full-time';
   let statusBadgeClass = 'status-badge-active';
   if (status === 'Part-time') statusBadgeClass = 'status-badge-partial';
@@ -51,7 +56,7 @@ export function teacherCardHTML(teacher) {
   `;
 }
 
-export function renderTeacherGrid(teachersList, containerEl, onTeacherClick) {
+function renderTeacherGrid(teachersList, containerEl) {
   if (!containerEl) return;
 
   if (!teachersList || teachersList.length === 0) {
@@ -68,7 +73,7 @@ export function renderTeacherGrid(teachersList, containerEl, onTeacherClick) {
   containerEl.innerHTML = teachersList.map(teacherCardHTML).join('');
 }
 
-export function initTeacherRoster(teachers, onTeacherClick) {
+export function initTeacherRoster(_teachersInput, onTeacherClick) {
   const teacherList = document.querySelector('#teacherList');
   const teacherSearchInput = document.querySelector('#teacherSearchInput');
   const teacherClassFilter = document.querySelector('#teacherClassFilter');
@@ -107,11 +112,12 @@ export function initTeacherRoster(teachers, onTeacherClick) {
   }
 
   function updateTeacherStats() {
+    const currentTeachers = getTeachers();
     if (totalTeachersCount) {
-      totalTeachersCount.textContent = teachers.length;
+      totalTeachersCount.textContent = currentTeachers.length;
     }
     if (totalDepartmentsCount) {
-      const depts = new Set(teachers.map((t) => t.department).filter(Boolean));
+      const depts = new Set(currentTeachers.map((t) => t.department).filter(Boolean));
       totalDepartmentsCount.textContent = depts.size;
     }
   }
@@ -124,8 +130,9 @@ export function initTeacherRoster(teachers, onTeacherClick) {
     const selectedClass = teacherClassFilter?.value || 'All';
     const selectedDept = teacherDeptFilter?.value || 'All';
     const selectedStatus = teacherStatusFilter?.value || 'All';
+    const currentTeachers = getTeachers();
 
-    const filtered = teachers.filter((teacher) => {
+    const filtered = currentTeachers.filter((teacher) => {
       const fullName = (teacher.name || `${teacher.firstName || ''} ${teacher.lastName || ''}`).toLowerCase();
       const teacherNo = (teacher.teacherNumber || '').toLowerCase();
       const dept = (teacher.department || '').toLowerCase();
@@ -163,7 +170,7 @@ export function initTeacherRoster(teachers, onTeacherClick) {
     const card = e.target.closest('.teacher-card');
     if (!card) return;
     const clickedId = Number(card.dataset.id);
-    const selected = teachers.find((t) => t.id === clickedId);
+    const selected = getTeachers().find((t) => t.id === clickedId);
     if (!selected) return;
 
     const actionBtn = e.target.closest('[data-action]');

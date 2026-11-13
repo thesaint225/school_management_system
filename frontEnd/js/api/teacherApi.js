@@ -1,4 +1,5 @@
 import { validateTeacher, validateTeacherList } from '../utils/apiValidator.js';
+import { extractApiErrorMessage } from '../utils/domUtils.js';
 
 // teacherApi.js - REST API Client connecting Frontend to Spring Boot & Database for Teachers
 const API_BASE_URL = 'http://localhost:8080/api/teachers';
@@ -48,15 +49,7 @@ export async function registerTeacherInDb(teacherRegistrationDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const rawCreated = await response.json();
@@ -82,15 +75,7 @@ export async function updateTeacherInDb(id, teacherRegistrationDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const rawUpdated = await response.json();
@@ -116,3 +101,10 @@ export async function deleteTeacherFromDb(id) {
   console.log(`🗑️ Successfully deleted teacher #${id} from database.`);
   return true;
 }
+
+export const TeacherApi = Object.freeze({
+  fetchAll: fetchTeachersFromDb,
+  register: registerTeacherInDb,
+  update: updateTeacherInDb,
+  remove: deleteTeacherFromDb,
+});

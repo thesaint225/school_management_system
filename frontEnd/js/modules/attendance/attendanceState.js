@@ -39,8 +39,11 @@ export function setAttendanceSearchQuery(query) {
  * @param {string} classFilter
  */
 export function setAttendanceClassFilter(classFilter) {
-  if (typeof classFilter !== 'string' || classFilter.trim().length === 0) {
-    throw new TypeError(`classFilter must be a non-empty string, received ${typeof classFilter}.`);
+  if (typeof classFilter !== 'string') {
+    throw new TypeError(`classFilter must be a string, received ${typeof classFilter}.`);
+  }
+  if (classFilter.trim().length === 0) {
+    throw new RangeError('classFilter must be a non-empty string.');
   }
   state.classFilter = classFilter.trim();
   state.currentPage = 1;
@@ -120,3 +123,14 @@ export function resetAttendanceState() {
   state.currentPage = 1;
   state.pageSize = 6;
 }
+
+export const AttendanceState = Object.freeze({
+  get: getAttendanceState,
+  setSearchQuery: setAttendanceSearchQuery,
+  setClassFilter: setAttendanceClassFilter,
+  setStatusFilter: setAttendanceStatusFilter,
+  setGenderFilter: setAttendanceGenderFilter,
+  setPageSize: setAttendancePageSize,
+  setCurrentPage: setAttendanceCurrentPage,
+  reset: resetAttendanceState,
+});

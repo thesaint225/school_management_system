@@ -2,12 +2,35 @@
 
 export const TIMEZONE_ACCRA = 'Africa/Accra';
 
-export const termRangeOptions = {
+const termRangeOptions = Object.freeze({
   timeZone: TIMEZONE_ACCRA,
   year: 'numeric',
   month: 'short',
   day: 'numeric',
-};
+});
+
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Checks whether a value is a real calendar date formatted as YYYY-MM-DD
+ * (rejects rollover dates such as '2026-02-31').
+ * @param {string} dateStr
+ * @returns {boolean}
+ */
+export function isValidISODateString(dateStr) {
+  if (typeof dateStr !== 'string') return false;
+  const trimmed = dateStr.trim();
+  if (!ISO_DATE_PATTERN.test(trimmed)) return false;
+  const [year, month, day] = trimmed.split('-').map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+  const d = new Date(Date.UTC(year, month - 1, day));
+  return (
+    !Number.isNaN(d.getTime()) &&
+    d.getUTCFullYear() === year &&
+    d.getUTCMonth() === month - 1 &&
+    d.getUTCDate() === day
+  );
+}
 
 // 1. Live School Clock Formatter
 export function formatSchoolTime(date = new Date()) {
@@ -155,3 +178,16 @@ export function calculateDaysBetween(startDate, endDate) {
   const diffMs = d2.getTime() - d1.getTime();
   return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 }
+
+export const DateUtils = Object.freeze({
+  TIMEZONE_ACCRA,
+  isValidISODateString,
+  formatSchoolTime,
+  formatTermRange,
+  getSchoolAttendanceTime,
+  formatAttendanceOfficialDate,
+  formatCalendarHeaderDate,
+  formatAgendaDate,
+  toISODateString,
+  calculateDaysBetween,
+});

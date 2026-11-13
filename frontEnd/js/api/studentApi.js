@@ -1,4 +1,5 @@
 import { validateStudent, validateStudentList } from '../utils/apiValidator.js';
+import { extractApiErrorMessage } from '../utils/domUtils.js';
 
 // studentApi.js - REST API Client connecting Frontend to Spring Boot & Database
 const API_BASE_URL = 'http://localhost:8080/api/students';
@@ -48,15 +49,7 @@ export async function registerStudentInDb(studentRegistrationDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const createdRaw = await response.json();
@@ -82,15 +75,7 @@ export async function updateStudentInDb(id, studentRegistrationDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const updatedRaw = await response.json();
@@ -116,4 +101,11 @@ export async function deleteStudentFromDb(id) {
   console.log(`🗑️ Successfully deleted student #${id} from database.`);
   return true;
 }
+
+export const StudentApi = Object.freeze({
+  fetchAll: fetchStudentsFromDb,
+  register: registerStudentInDb,
+  update: updateStudentInDb,
+  remove: deleteStudentFromDb,
+});
 

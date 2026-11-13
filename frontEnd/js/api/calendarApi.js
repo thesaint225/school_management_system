@@ -4,6 +4,7 @@ import {
   validateAcademicTerm,
   validateAcademicTermList,
 } from '../utils/apiValidator.js';
+import { extractApiErrorMessage } from '../utils/domUtils.js';
 
 // calendarApi.js - REST API Client connecting Frontend to Spring Boot & Database for Academic Calendar & Events
 const API_BASE_URL = 'http://localhost:8080/api/calendar';
@@ -111,15 +112,7 @@ export async function createCalendarEventInDb(eventDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const raw = await response.json();
@@ -127,3 +120,10 @@ export async function createCalendarEventInDb(eventDto) {
   console.log('✅ Created & validated calendar event in database:', created);
   return created;
 }
+
+export const CalendarApi = Object.freeze({
+  fetchEvents: fetchCalendarEventsFromDb,
+  fetchTerms: fetchAcademicTermsFromDb,
+  fetchActiveTerm: fetchActiveTermFromDb,
+  createEvent: createCalendarEventInDb,
+});

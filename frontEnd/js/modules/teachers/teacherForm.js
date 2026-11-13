@@ -2,10 +2,12 @@
 // Connects to Spring Boot backend via teacherApi.js and enforces accessible blur validation
 
 import { registerTeacherInDb } from '../../api/teacherApi.js';
+import { addTeacher } from '../../data/teachersData.js';
 import { populateSubjectCheckboxes } from '../subjects/subjectUtils.js';
 import { populateClassCheckboxes } from '../classes/classUtils.js';
 
-export function initTeacherForm(teachers, onTeacherAdded) {
+export function initTeacherForm(arg1, arg2) {
+  const onTeacherAdded = typeof arg1 === 'function' ? arg1 : arg2;
   const form = document.querySelector('#teacherRegistrationForm');
   const feedback = document.querySelector('#teacherFormFeedback');
   const submitBtn = form?.querySelector('button[type="submit"]');
@@ -270,7 +272,7 @@ export function initTeacherForm(teachers, onTeacherAdded) {
 
     try {
       const createdTeacher = await registerTeacherInDb(teacherDto);
-      teachers.push(createdTeacher);
+      addTeacher(createdTeacher);
 
       if (feedback) {
         feedback.className = 'form-feedback success';

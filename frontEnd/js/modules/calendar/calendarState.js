@@ -1,8 +1,7 @@
 // Calendar Module Centralized State (Encapsulated)
-import { toISODateString } from '../../utils/dateUtils.js';
+import { toISODateString, isValidISODateString } from '../../utils/dateUtils.js';
 
 const ALLOWED_FILTERS = new Set(['all', 'term', 'event', 'exam', 'holiday', 'deadline']);
-const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 const today = new Date();
 
@@ -85,8 +84,8 @@ export function setSelectedDate(dateStr) {
     throw new TypeError(`selectedDate must be a string, received ${typeof dateStr}.`);
   }
   const trimmed = dateStr.trim();
-  if (!ISO_DATE_PATTERN.test(trimmed) || Number.isNaN(Date.parse(trimmed))) {
-    throw new RangeError(`selectedDate must be a valid YYYY-MM-DD date string, received "${dateStr}".`);
+  if (!isValidISODateString(trimmed)) {
+    throw new RangeError(`selectedDate must be a valid YYYY-MM-DD calendar date, received "${dateStr}".`);
   }
   state.selectedDate = trimmed;
 }
@@ -116,3 +115,12 @@ export function resetCalendarToToday() {
   state.viewMonth = now.getMonth();
   state.selectedDate = toISODateString(now.getFullYear(), now.getMonth(), now.getDate());
 }
+
+export const CalendarState = Object.freeze({
+  get: getCalendarState,
+  setViewMonth: setCalendarViewMonth,
+  navigateMonth: navigateCalendarMonth,
+  setSelectedDate,
+  setActiveFilter,
+  resetToToday: resetCalendarToToday,
+});

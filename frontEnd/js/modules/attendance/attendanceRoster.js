@@ -8,15 +8,33 @@ import {
   setAttendancePageSize,
   setAttendanceCurrentPage,
 } from './attendanceState.js';
+import {
+  getStudents,
+  getStudentById,
+  updateStudentDailyAttendance,
+} from '../../data/studentsData.js';
 import { calculateAttendanceRate } from './attendanceAnalytics.js';
-import { getInitials } from '../students/studentModal.js';
+import { getInitials } from '../../utils/domUtils.js';
 import { ICONS } from '../../utils/icons.js';
 import {
   getSchoolAttendanceTime,
   formatAttendanceOfficialDate,
 } from '../../utils/dateUtils.js';
 
-export function initAttendanceRoster(students, onOpenStudentModal) {
+let attendanceClockIntervalId = null;
+let attendanceController = null;
+let currentOpenStudentModalCallback = null;
+
+export function initAttendanceRoster(_studentsInput, onOpenStudentModal) {
+  if (typeof onOpenStudentModal === 'function') {
+    currentOpenStudentModalCallback = onOpenStudentModal;
+  }
+
+  if (attendanceController) {
+    attendanceController.refresh();
+    return attendanceController;
+  }
+
   // DOM Elements
   const statTodayAttendanceRate = document.querySelector(
     '#statTodayAttendanceRate',
@@ -53,7 +71,9 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
     }
   }
   updateAttendanceHeaderClock();
-  setInterval(updateAttendanceHeaderClock, 1000);
+  if (!attendanceClockIntervalId) {
+    attendanceClockIntervalId = setInterval(updateAttendanceHeaderClock, 1000);
+  }
 
   if (attendanceDateFull) {
     attendanceDateFull.textContent = formatAttendanceOfficialDate();
@@ -63,8 +83,9 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
   function filterStudents() {
     const { searchQuery, classFilter, statusFilter, genderFilter } = getAttendanceState();
     const query = searchQuery.trim().toLowerCase();
+    const currentStudents = getStudents();
 
-    return students.filter((student) => {
+    return currentStudents.filter((student) => {
       const formattedId =
         `#edu-${student.id.toString().padStart(4, '0')}`.toLowerCase();
       const matchesSearch =
@@ -91,26 +112,17 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
 
   // Individual Student Status Updaters
   function markStudentPresent(studentId) {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
-    student.dailyAttendance.status = 'Present';
-    student.dailyAttendance.timestamp = getSchoolAttendanceTime();
+    updateStudentDailyAttendance(studentId, 'Present', getSchoolAttendanceTime());
     renderAttendance();
   }
 
   function markStudentLate(studentId) {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
-    student.dailyAttendance.status = 'Late';
-    student.dailyAttendance.timestamp = getSchoolAttendanceTime();
+    updateStudentDailyAttendance(studentId, 'Late', getSchoolAttendanceTime());
     renderAttendance();
   }
 
   function markStudentAbsent(studentId) {
-    const student = students.find((s) => s.id === studentId);
-    if (!student) return;
-    student.dailyAttendance.status = 'Absent';
-    student.dailyAttendance.timestamp = null;
+    updateStudentDailyAttendance(studentId, 'Absent', null);
     renderAttendance();
   }
 
@@ -119,8 +131,7 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
     const nowTime = getSchoolAttendanceTime();
     const visibleStudents = filterStudents();
     visibleStudents.forEach((student) => {
-      student.dailyAttendance.status = 'Present';
-      student.dailyAttendance.timestamp = nowTime;
+      updateStudentDailyAttendance(student.id, 'Present', nowTime);
     });
     renderAttendance();
   }
@@ -128,15 +139,14 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
   function resetAllVisibleAttendance() {
     const visibleStudents = filterStudents();
     visibleStudents.forEach((student) => {
-      student.dailyAttendance.status = 'Unmarked';
-      student.dailyAttendance.timestamp = null;
+      updateStudentDailyAttendance(student.id, 'Unmarked', null);
     });
     renderAttendance();
   }
 
   // Render Subsystems: Analytics Summary Bar
   function renderAnalyticsSummary() {
-    const stats = calculateAttendanceRate(students);
+    const stats = calculateAttendanceRate(getStudents());
 
     if (metricPresentCount) metricPresentCount.textContent = stats.present;
     if (metricPresentPct) metricPresentPct.textContent = `${stats.presentPct}%`;
@@ -167,8 +177,8 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
     }
   }
 
-  // Render Subsystems: Roster Table Row
-  function renderRosterTableRow(student) {
+  // Render Subsystems: Roster Table Row (Safe DOM construction)
+  function createRosterTableRowElement(student) {
     const initials = getInitials(student.name);
     const daily = student.dailyAttendance || {
       status: 'Unmarked',
@@ -176,81 +186,109 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
     };
     const status = daily.status;
 
-    let statusBadgeHTML = '';
+    const tr = document.createElement('tr');
+    tr.dataset.studentId = String(student.id);
+
+    // 1. Student Identity Cell
+    const tdStudent = document.createElement('td');
+    const studentCellDiv = document.createElement('div');
+    studentCellDiv.className = 'roster-student-cell';
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'roster-avatar';
+    avatarDiv.textContent = initials;
+    const identityWrap = document.createElement('div');
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'roster-student-name';
+    nameDiv.textContent = student.name;
+    const idDiv = document.createElement('div');
+    idDiv.className = 'roster-student-id';
+    idDiv.textContent = `#EDU-${student.id.toString().padStart(4, '0')}`;
+    identityWrap.append(nameDiv, idDiv);
+    studentCellDiv.append(avatarDiv, identityWrap);
+    tdStudent.appendChild(studentCellDiv);
+
+    // 2. Class Badge Cell
+    const tdClass = document.createElement('td');
+    const classBadge = document.createElement('span');
+    classBadge.className = 'roster-class-badge';
+    classBadge.textContent = student.class;
+    tdClass.appendChild(classBadge);
+
+    // 3. Status Badge Cell
+    const tdStatus = document.createElement('td');
+    const statusBadge = document.createElement('span');
     if (status === 'Present') {
-      statusBadgeHTML = `<span class="status-badge-pill status-present">${ICONS.present} Present</span>`;
+      statusBadge.className = 'status-badge-pill status-present';
+      statusBadge.innerHTML = ICONS.present;
+      statusBadge.append(' Present');
     } else if (status === 'Late') {
-      statusBadgeHTML = `<span class="status-badge-pill status-late">${ICONS.late} Late</span>`;
+      statusBadge.className = 'status-badge-pill status-late';
+      statusBadge.innerHTML = ICONS.late;
+      statusBadge.append(' Late');
     } else if (status === 'Absent') {
-      statusBadgeHTML = `<span class="status-badge-pill status-absent">${ICONS.absent} Absent</span>`;
+      statusBadge.className = 'status-badge-pill status-absent';
+      statusBadge.innerHTML = ICONS.absent;
+      statusBadge.append(' Absent');
     } else {
-      statusBadgeHTML = `<span class="status-badge-pill status-unmarked">${ICONS.unmarked} Unmarked</span>`;
+      statusBadge.className = 'status-badge-pill status-unmarked';
+      statusBadge.innerHTML = ICONS.unmarked;
+      statusBadge.append(' Unmarked');
     }
+    tdStatus.appendChild(statusBadge);
 
-    const timeDisplay = daily.timestamp
-      ? `<span class="roster-time">${daily.timestamp}</span>`
-      : `<span class="roster-time empty">—</span>`;
+    // 4. Timestamp Cell
+    const tdTime = document.createElement('td');
+    const timeSpan = document.createElement('span');
+    if (daily.timestamp) {
+      timeSpan.className = 'roster-time';
+      timeSpan.textContent = daily.timestamp;
+    } else {
+      timeSpan.className = 'roster-time empty';
+      timeSpan.textContent = '—';
+    }
+    tdTime.appendChild(timeSpan);
 
-    return `
-      <tr data-student-id="${student.id}">
-        <td>
-          <div class="roster-student-cell">
-            <div class="roster-avatar">${initials}</div>
-            <div>
-              <div class="roster-student-name">${student.name}</div>
-              <div class="roster-student-id">#EDU-${student.id.toString().padStart(4, '0')}</div>
-            </div>
-          </div>
-        </td>
+    // 5. Segmented Status Controls Cell
+    const tdControls = document.createElement('td');
+    const controlGroup = document.createElement('div');
+    controlGroup.className = 'segmented-status-control';
+    controlGroup.setAttribute('role', 'group');
+    controlGroup.setAttribute('aria-label', `Mark attendance for ${student.name}`);
 
-        <td>
-          <span class="roster-class-badge">${student.class}</span>
-        </td>
+    const createStatusBtn = (actionName, btnClass, isActive, titleText, iconSvg, labelText) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `btn-ctrl ${btnClass}${isActive ? ' active' : ''}`;
+      btn.dataset.action = actionName;
+      btn.setAttribute('aria-pressed', String(isActive));
+      btn.title = titleText;
+      btn.innerHTML = iconSvg;
+      btn.append(` ${labelText}`);
+      return btn;
+    };
 
-        <td>
-          ${statusBadgeHTML}
-        </td>
+    controlGroup.append(
+      createStatusBtn('present', 'btn-present', status === 'Present', 'Mark Present', ICONS.present, 'Present'),
+      createStatusBtn('late', 'btn-late', status === 'Late', 'Mark Late', ICONS.late, 'Late'),
+      createStatusBtn('absent', 'btn-absent', status === 'Absent', 'Mark Absent', ICONS.absent, 'Absent'),
+    );
+    tdControls.appendChild(controlGroup);
 
-        <td>
-          ${timeDisplay}
-        </td>
+    // 6. View Modal Action Cell
+    const tdView = document.createElement('td');
+    const viewBtn = document.createElement('button');
+    viewBtn.type = 'button';
+    viewBtn.className = 'btn-roster-view';
+    viewBtn.dataset.action = 'view-modal';
+    const viewTextSpan = document.createElement('span');
+    viewTextSpan.textContent = 'View';
+    const extIconSpan = document.createElement('span');
+    extIconSpan.innerHTML = ICONS.externalLink;
+    viewBtn.append(viewTextSpan, ' ', extIconSpan);
+    tdView.appendChild(viewBtn);
 
-        <td>
-          <div class="segmented-status-control" role="group" aria-label="Mark attendance for ${student.name}">
-            <button 
-              type="button" 
-              class="btn-ctrl btn-present ${status === 'Present' ? 'active' : ''}" 
-              data-action="present"
-              aria-pressed="${status === 'Present'}"
-              title="Mark Present">
-              ${ICONS.present} Present
-            </button>
-            <button 
-              type="button" 
-              class="btn-ctrl btn-late ${status === 'Late' ? 'active' : ''}" 
-              data-action="late"
-              aria-pressed="${status === 'Late'}"
-              title="Mark Late">
-              ${ICONS.late} Late
-            </button>
-            <button 
-              type="button" 
-              class="btn-ctrl btn-absent ${status === 'Absent' ? 'active' : ''}" 
-              data-action="absent"
-              aria-pressed="${status === 'Absent'}"
-              title="Mark Absent">
-              ${ICONS.absent} Absent
-            </button>
-          </div>
-        </td>
-
-        <td>
-          <button type="button" class="btn-roster-view" data-action="view-modal">
-            <span>View</span> ${ICONS.externalLink}
-          </button>
-        </td>
-      </tr>
-    `;
+    tr.append(tdStudent, tdClass, tdStatus, tdTime, tdControls, tdView);
+    return tr;
   }
 
   // Render Subsystems: Pagination Controls
@@ -266,12 +304,17 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
     const { currentPage } = getAttendanceState();
 
     if (paginationInfo) {
+      paginationInfo.replaceChildren();
       if (totalFilteredCount === 0) {
-        paginationInfo.innerHTML = `No students found matching filters`;
+        paginationInfo.textContent = 'No students found matching filters';
       } else {
         const start = (currentPage - 1) * pageSize + 1;
         const end = Math.min(currentPage * pageSize, totalFilteredCount);
-        paginationInfo.innerHTML = `Showing <strong>${start}–${end}</strong> of <strong>${totalFilteredCount}</strong> students`;
+        const rangeStrong = document.createElement('strong');
+        rangeStrong.textContent = `${start}–${end}`;
+        const totalStrong = document.createElement('strong');
+        totalStrong.textContent = String(totalFilteredCount);
+        paginationInfo.append('Showing ', rangeStrong, ' of ', totalStrong, ' students');
       }
     }
 
@@ -283,20 +326,17 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
     }
 
     if (pageNumbersWrap) {
-      let pagesHTML = '';
+      pageNumbersWrap.replaceChildren();
       for (let i = 1; i <= totalPages; i++) {
-        pagesHTML += `
-          <button 
-            type="button" 
-            class="page-num-btn ${i === currentPage ? 'active' : ''}" 
-            data-page="${i}"
-            aria-label="Go to page ${i}"
-            aria-current="${i === currentPage ? 'page' : 'false'}">
-            ${i}
-          </button>
-        `;
+        const pageBtn = document.createElement('button');
+        pageBtn.type = 'button';
+        pageBtn.className = `page-num-btn${i === currentPage ? ' active' : ''}`;
+        pageBtn.dataset.page = String(i);
+        pageBtn.setAttribute('aria-label', `Go to page ${i}`);
+        pageBtn.setAttribute('aria-current', i === currentPage ? 'page' : 'false');
+        pageBtn.textContent = String(i);
+        pageNumbersWrap.appendChild(pageBtn);
       }
-      pageNumbersWrap.innerHTML = pagesHTML;
     }
   }
 
@@ -309,14 +349,20 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
     const filteredStudents = filterStudents();
     const totalFiltered = filteredStudents.length;
 
+    rosterTableBody.replaceChildren();
+
     if (totalFiltered === 0) {
-      rosterTableBody.innerHTML = `
-        <tr>
-          <td colspan="6" class="roster-empty-cell">
-            ${ICONS.search} <span>No students found matching your search or filters.</span>
-          </td>
-        </tr>
-      `;
+      const emptyTr = document.createElement('tr');
+      const emptyTd = document.createElement('td');
+      emptyTd.colSpan = 6;
+      emptyTd.className = 'roster-empty-cell';
+      const iconSpan = document.createElement('span');
+      iconSpan.innerHTML = ICONS.search;
+      const msgSpan = document.createElement('span');
+      msgSpan.textContent = 'No students found matching your search or filters.';
+      emptyTd.append(iconSpan, ' ', msgSpan);
+      emptyTr.appendChild(emptyTd);
+      rosterTableBody.appendChild(emptyTr);
       renderPagination(0);
       return;
     }
@@ -328,9 +374,9 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
       startIndex + pageSize,
     );
 
-    rosterTableBody.innerHTML = paginatedStudents
-      .map(renderRosterTableRow)
-      .join('');
+    paginatedStudents.forEach((student) => {
+      rosterTableBody.appendChild(createRosterTableRowElement(student));
+    });
 
     renderPagination(totalFiltered);
   }
@@ -391,9 +437,9 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
       } else if (action === 'absent') {
         markStudentAbsent(studentId);
       } else if (action === 'view-modal') {
-        const student = students.find((s) => s.id === studentId);
-        if (student && onOpenStudentModal) {
-          onOpenStudentModal(student);
+        const student = getStudentById(studentId);
+        if (student && currentOpenStudentModalCallback) {
+          currentOpenStudentModalCallback(student);
         }
       }
     });
@@ -446,4 +492,9 @@ export function initAttendanceRoster(students, onOpenStudentModal) {
 
   // Initial render
   renderAttendance();
+
+  attendanceController = {
+    refresh: renderAttendance,
+  };
+  return attendanceController;
 }

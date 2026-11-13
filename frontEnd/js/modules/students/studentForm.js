@@ -2,15 +2,16 @@
 // Aligns directly with backend com.miessan.schoolmanagement.dto.StudentRegistrationDto and persists to Database
 
 import { registerStudentInDb } from '../../api/studentApi.js';
+import { getStudents, addStudent } from '../../data/studentsData.js';
 import { populateSubjectCheckboxes } from '../subjects/subjectUtils.js';
 import { populateClassSelectOptions } from '../classes/classUtils.js';
 
 /**
  * Initializes student registration form handling and field-level blur validation.
- * @param {Array} students - The in-memory students array
  * @param {Function} [onStudentAdded] - Callback triggered when a student record is added
  */
-export function initStudentForm(students, onStudentAdded) {
+export function initStudentForm(arg1, arg2) {
+  const onStudentAdded = typeof arg1 === 'function' ? arg1 : arg2;
   const form = document.querySelector('#studentRegistrationForm');
   const feedback = document.querySelector('#studentFormFeedback');
   const submitBtn = form?.querySelector('button[type="submit"]');
@@ -361,7 +362,8 @@ export function initStudentForm(students, onStudentAdded) {
         createdStudent = await registerStudentInDb(studentRegistrationDtoPayload);
       } catch (networkErr) {
         console.warn('⚠️ Fallback to local memory registration:', networkErr);
-        const nextId = students.length > 0 ? Math.max(...students.map((s) => s.id)) + 1 : 1;
+        const existingStudents = getStudents();
+        const nextId = existingStudents.length > 0 ? Math.max(...existingStudents.map((s) => s.id)) + 1 : 1;
         createdStudent = {
           id: nextId,
           ...studentRegistrationDtoPayload,
@@ -372,9 +374,9 @@ export function initStudentForm(students, onStudentAdded) {
         createdStudent.subjects = selectedSubjects;
       }
 
-      students.push(createdStudent);
+      addStudent(createdStudent);
 
-      if (onStudentAdded) {
+      if (typeof onStudentAdded === 'function') {
         onStudentAdded(createdStudent);
       }
 

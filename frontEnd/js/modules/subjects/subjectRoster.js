@@ -1,6 +1,7 @@
 // subjectRoster.js - Subject Directory, Search, Filter, & Grid Roster Module
+import { getSubjects } from './subjectUtils.js';
 
-export function subjectCardHTML(subject) {
+function subjectCardHTML(subject) {
   const isActive = subject.active !== false;
   const statusBadgeClass = isActive ? 'status-badge-active' : 'status-badge-danger';
   const statusText = isActive ? 'Active' : 'Archived / Inactive';
@@ -29,7 +30,7 @@ export function subjectCardHTML(subject) {
   `;
 }
 
-export function renderSubjectGrid(subjectsList, containerEl, onSubjectClick) {
+function renderSubjectGrid(subjectsList, containerEl) {
   if (!containerEl) return;
 
   if (!subjectsList || subjectsList.length === 0) {
@@ -46,7 +47,8 @@ export function renderSubjectGrid(subjectsList, containerEl, onSubjectClick) {
   containerEl.innerHTML = subjectsList.map(subjectCardHTML).join('');
 }
 
-export function initSubjectRoster(subjects, onSubjectClick) {
+export function initSubjectRoster(arg1, arg2) {
+  const onSubjectClick = typeof arg1 === 'function' ? arg1 : arg2;
   const subjectList = document.querySelector('#subjectList');
   const subjectSearchInput = document.querySelector('#subjectSearchInput');
   const subjectDeptFilter = document.querySelector('#subjectDeptFilter');
@@ -54,7 +56,14 @@ export function initSubjectRoster(subjects, onSubjectClick) {
   const totalSubjectsCount = document.querySelector('#totalSubjectsCount');
   const activeSubjectsCount = document.querySelector('#activeSubjectsCount');
 
+  function getCurrentSubjects() {
+    const storeSubjects = getSubjects();
+    if (storeSubjects.length > 0) return storeSubjects;
+    return Array.isArray(arg1) ? arg1 : [];
+  }
+
   function updateSubjectStats() {
+    const subjects = getCurrentSubjects();
     if (totalSubjectsCount) {
       totalSubjectsCount.textContent = subjects.length;
     }
@@ -70,6 +79,7 @@ export function initSubjectRoster(subjects, onSubjectClick) {
     const searchQuery = (subjectSearchInput?.value || '').trim().toLowerCase();
     const selectedDept = subjectDeptFilter?.value || 'All';
     const selectedStatus = subjectStatusFilter?.value || 'All';
+    const subjects = getCurrentSubjects();
 
     const filtered = subjects.filter((subject) => {
       const name = (subject.name || '').toLowerCase();
@@ -95,7 +105,7 @@ export function initSubjectRoster(subjects, onSubjectClick) {
       return matchesSearch && matchesDept && matchesStatus;
     });
 
-    renderSubjectGrid(filtered, subjectList, onSubjectClick);
+    renderSubjectGrid(filtered, subjectList);
   }
 
   // Initial render
@@ -111,7 +121,7 @@ export function initSubjectRoster(subjects, onSubjectClick) {
     const card = e.target.closest('.subject-card');
     if (!card) return;
     const clickedId = Number(card.dataset.id);
-    const selected = subjects.find((s) => s.id === clickedId);
+    const selected = getCurrentSubjects().find((s) => s.id === clickedId);
     if (!selected) return;
 
     const actionBtn = e.target.closest('[data-action]');

@@ -2,8 +2,12 @@
 // Connects to Spring Boot backend via subjectApi.js and enforces accessible blur validation
 
 import { createSubjectInDb } from '../../api/subjectApi.js';
+import { addSubjectToStore } from './subjectUtils.js';
+import { setFieldError } from '../../utils/domUtils.js';
 
-export function initSubjectForm(subjects, onSubjectAdded) {
+export function initSubjectForm(arg1, arg2) {
+  const onSubjectAdded = typeof arg1 === 'function' ? arg1 : arg2;
+  const legacySubjectsArray = Array.isArray(arg1) ? arg1 : null;
   const form = document.querySelector('#subjectCreationForm');
   const feedback = document.querySelector('#subjectFormFeedback');
   const submitBtn = form?.querySelector('button[type="submit"]');
@@ -21,32 +25,6 @@ export function initSubjectForm(subjects, onSubjectAdded) {
 
   const descInput = document.querySelector('#subjectDescription');
   const activeInput = document.querySelector('#subjectActive');
-
-  function setFieldError(inputEl, errorEl, message) {
-    if (message) {
-      if (inputEl) {
-        inputEl.classList.add('is-invalid');
-        inputEl.classList.remove('is-valid');
-        inputEl.setAttribute('aria-invalid', 'true');
-      }
-      if (errorEl) {
-        errorEl.textContent = `⚠️ ${message}`;
-        errorEl.classList.add('visible');
-      }
-      return false;
-    } else {
-      if (inputEl) {
-        inputEl.classList.remove('is-invalid');
-        inputEl.classList.add('is-valid');
-        inputEl.setAttribute('aria-invalid', 'false');
-      }
-      if (errorEl) {
-        errorEl.textContent = '';
-        errorEl.classList.remove('visible');
-      }
-      return true;
-    }
-  }
 
   function validateTitle() {
     const val = nameInput?.value.trim() || '';
@@ -113,7 +91,10 @@ export function initSubjectForm(subjects, onSubjectAdded) {
 
     try {
       const createdSubject = await createSubjectInDb(subjectDto);
-      subjects.push(createdSubject);
+      addSubjectToStore(createdSubject);
+      if (legacySubjectsArray) {
+        legacySubjectsArray.push(createdSubject);
+      }
 
       if (feedback) {
         feedback.className = 'form-feedback success';

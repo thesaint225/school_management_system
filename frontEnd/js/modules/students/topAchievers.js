@@ -1,11 +1,11 @@
 // Top Achievers Module (.sort() & .slice(0, 3))
 import { ICONS } from '../../utils/icons.js';
 
-export function compareStudentGpa(a, b) {
+function compareStudentGpa(a, b) {
   return b.gpa - a.gpa;
 }
 
-export function getStudentProgram(student) {
+function getStudentProgram(student) {
   const subjects = student.subjects;
   if (subjects.includes('Physics') || subjects.includes('Chemistry')) {
     return 'Science';
@@ -34,7 +34,7 @@ export function getStudentProgram(student) {
   return subjects[0] || 'General';
 }
 
-export function renderAchieverRow(student, index) {
+function renderAchieverRow(student, index) {
   const medals = [ICONS.medalGold, ICONS.medalSilver, ICONS.medalBronze];
   const medal = medals[index] || ICONS.medalDefault;
   const program = getStudentProgram(student);
@@ -51,7 +51,7 @@ export function renderAchieverRow(student, index) {
   `;
 }
 
-export function renderTopAchievers(students) {
+function renderTopAchievers(students) {
   const studentCopy = [...students];
   studentCopy.sort(compareStudentGpa);
   const top3Achievers = studentCopy.slice(0, 3);
@@ -63,7 +63,7 @@ export function initTopAchievers(students, onAchieverClick) {
   if (achieversList) {
     achieversList.innerHTML = renderTopAchievers(students);
 
-    achieversList.addEventListener('click', (e) => {
+    achieversList.onclick = (e) => {
       const row = e.target.closest('.achiever-row');
       if (!row) return;
       const clickedId = Number(row.dataset.id);
@@ -71,6 +71,6 @@ export function initTopAchievers(students, onAchieverClick) {
       if (selected && onAchieverClick) {
         onAchieverClick(selected);
       }
-    });
+    };
   }
 }

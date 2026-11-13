@@ -1,4 +1,5 @@
 import { validateSubject, validateSubjectList } from '../utils/apiValidator.js';
+import { extractApiErrorMessage } from '../utils/domUtils.js';
 
 // subjectApi.js - REST API Client connecting Frontend to Spring Boot & Database for Subjects
 const API_BASE_URL = 'http://localhost:8080/api/subjects';
@@ -70,15 +71,7 @@ export async function createSubjectInDb(subjectDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const raw = await response.json();
@@ -104,15 +97,7 @@ export async function updateSubjectInDb(id, subjectDto) {
   });
 
   if (!response.ok) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   const raw = await response.json();
@@ -132,15 +117,7 @@ export async function deleteOrDeactivateSubjectInDb(id) {
   });
 
   if (!response.ok && response.status !== 204) {
-    let errorDetails = `HTTP ${response.status}`;
-    try {
-      const errorJson = await response.json();
-      errorDetails = errorJson.message || JSON.stringify(errorJson);
-    } catch {
-      const text = await response.text();
-      if (text) errorDetails = text;
-    }
-    throw new Error(errorDetails);
+    throw new Error(await extractApiErrorMessage(response));
   }
 
   try {
@@ -151,3 +128,11 @@ export async function deleteOrDeactivateSubjectInDb(id) {
     return { success: true, status: 'DELETED', message: `Subject #${id} deleted or deactivated.` };
   }
 }
+
+export const SubjectApi = Object.freeze({
+  fetchAll: fetchSubjectsFromDb,
+  fetchById: fetchSubjectByIdFromDb,
+  create: createSubjectInDb,
+  update: updateSubjectInDb,
+  deleteOrDeactivate: deleteOrDeactivateSubjectInDb,
+});

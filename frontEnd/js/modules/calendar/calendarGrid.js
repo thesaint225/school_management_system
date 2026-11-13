@@ -3,7 +3,7 @@ import { getCalendarState, setSelectedDate } from './calendarState.js';
 import { getCalendarItems } from '../../data/calendarData.js';
 import { toISODateString } from '../../utils/dateUtils.js';
 
-export function getMonthDaysMatrix(year, monthIndex) {
+function getMonthDaysMatrix(year, monthIndex) {
   // First day of current month (0 = Sun, 1 = Mon, ..., 6 = Sat)
   const firstDayOfWeek = new Date(year, monthIndex, 1).getDay();
   // Total days in current month
@@ -56,7 +56,7 @@ export function getMonthDaysMatrix(year, monthIndex) {
   return cells;
 }
 
-export function filterCalendarItemsByDateAndCategory(dateString, categoryFilter) {
+function filterCalendarItemsByDateAndCategory(dateString, categoryFilter) {
   return getCalendarItems().filter((item) => {
     const matchesDate = item.date === dateString;
     const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
@@ -74,48 +74,60 @@ export function renderCalendarGrid(onSelectDateCallback) {
   const now = new Date();
   const todayISO = toISODateString(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const gridHTML = cells
-    .map((cell) => {
-      const itemsOnThisDay = filterCalendarItemsByDateAndCategory(cell.dateString, activeFilter);
-      const isToday = cell.dateString === todayISO;
-      const isSelected = cell.dateString === selectedDate;
+  gridContainer.replaceChildren();
 
-      // Generate indicator dots
-      let dotsHTML = '';
-      if (itemsOnThisDay.length > 0) {
-        // Show up to 4 dots max to keep UI clean
-        const visibleDots = itemsOnThisDay.slice(0, 4);
-        const dotsMarkup = visibleDots
-          .map((item) => `<span class="cal-dot cal-dot-${item.category}" title="${item.title}"></span>`)
-          .join('');
-        dotsHTML = `<div class="cal-day-dots">${dotsMarkup}${itemsOnThisDay.length > 4 ? '<span class="cal-dot-more">+</span>' : ''}</div>`;
+  cells.forEach((cell) => {
+    const itemsOnThisDay = filterCalendarItemsByDateAndCategory(cell.dateString, activeFilter);
+    const isToday = cell.dateString === todayISO;
+    const isSelected = cell.dateString === selectedDate;
+
+    const cellClasses = [
+      'cal-day-cell',
+      cell.isCurrentMonth ? 'in-month' : 'out-month',
+      isToday ? 'is-today' : '',
+      isSelected ? 'is-selected' : '',
+      itemsOnThisDay.length > 0 ? 'has-events' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = cellClasses;
+    btn.dataset.date = cell.dateString;
+    btn.setAttribute('aria-label', `${cell.dateString}, ${itemsOnThisDay.length} items scheduled`);
+    btn.setAttribute('aria-pressed', String(isSelected));
+
+    const dayNumberSpan = document.createElement('span');
+    dayNumberSpan.className = 'cal-day-number';
+    dayNumberSpan.textContent = String(cell.day);
+    btn.appendChild(dayNumberSpan);
+
+    if (itemsOnThisDay.length > 0) {
+      const dotsDiv = document.createElement('div');
+      dotsDiv.className = 'cal-day-dots';
+
+      const visibleDots = itemsOnThisDay.slice(0, 4);
+      visibleDots.forEach((item) => {
+        const dotSpan = document.createElement('span');
+        const safeCategory = String(item.category || 'default').replace(/[^a-z0-9_-]/gi, '');
+        dotSpan.className = `cal-dot cal-dot-${safeCategory}`;
+        dotSpan.title = String(item.title || '');
+        dotsDiv.appendChild(dotSpan);
+      });
+
+      if (itemsOnThisDay.length > 4) {
+        const moreSpan = document.createElement('span');
+        moreSpan.className = 'cal-dot-more';
+        moreSpan.textContent = '+';
+        dotsDiv.appendChild(moreSpan);
       }
 
-      const cellClasses = [
-        'cal-day-cell',
-        cell.isCurrentMonth ? 'in-month' : 'out-month',
-        isToday ? 'is-today' : '',
-        isSelected ? 'is-selected' : '',
-        itemsOnThisDay.length > 0 ? 'has-events' : '',
-      ]
-        .filter(Boolean)
-        .join(' ');
+      btn.appendChild(dotsDiv);
+    }
 
-      return `
-        <button 
-          type="button" 
-          class="${cellClasses}" 
-          data-date="${cell.dateString}"
-          aria-label="${cell.dateString}, ${itemsOnThisDay.length} items scheduled"
-          aria-pressed="${isSelected}">
-          <span class="cal-day-number">${cell.day}</span>
-          ${dotsHTML}
-        </button>
-      `;
-    })
-    .join('');
-
-  gridContainer.innerHTML = gridHTML;
+    gridContainer.appendChild(btn);
+  });
 
   // Day Cell click event delegation
   gridContainer.onclick = (e) => {

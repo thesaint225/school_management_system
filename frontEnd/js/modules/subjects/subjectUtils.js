@@ -2,6 +2,75 @@
 import { fetchSubjectsFromDb } from '../../api/subjectApi.js';
 
 let cachedActiveSubjects = null;
+const subjectsStore = [];
+
+function validateSubjectItem(sub, label = 'Subject item') {
+  if (!sub || typeof sub !== 'object' || Array.isArray(sub)) {
+    throw new TypeError(`${label} must be a non-null object.`);
+  }
+  if (typeof sub.name !== 'string') {
+    throw new TypeError(`${label} must have a string "name".`);
+  }
+  if (sub.name.trim().length === 0) {
+    throw new RangeError(`${label} must have a non-empty string "name".`);
+  }
+}
+
+/**
+ * Returns a defensive deep clone of all subjects in the directory store.
+ * @returns {Array<Object>}
+ */
+export function getSubjects() {
+  return structuredClone(subjectsStore);
+}
+
+/**
+ * Replaces the in-memory subjects directory store with validated, deep-cloned records.
+ * @param {Array<Object>} subjectsList
+ */
+export function setSubjects(subjectsList) {
+  if (!Array.isArray(subjectsList)) {
+    throw new TypeError(`Expected an array of subjects for setSubjects, received ${typeof subjectsList}.`);
+  }
+  subjectsList.forEach((sub, idx) => validateSubjectItem(sub, `Subject item at index ${idx}`));
+  const cloned = structuredClone(subjectsList);
+  subjectsStore.length = 0;
+  subjectsStore.push(...cloned);
+}
+
+/**
+ * Adds a validated subject record to the in-memory subjects directory store.
+ * @param {Object} newSubject
+ * @returns {Object} Deep clone of the added subject
+ */
+export function addSubjectToStore(newSubject) {
+  validateSubjectItem(newSubject, 'New subject');
+  const cloned = structuredClone(newSubject);
+  subjectsStore.push(cloned);
+  invalidateSubjectCache();
+  return structuredClone(cloned);
+}
+
+/**
+ * Removes a subject record by ID from the in-memory store.
+ * @param {number} id
+ * @returns {boolean}
+ */
+export function removeSubjectById(id) {
+  if (typeof id !== 'number' || !Number.isInteger(id)) {
+    throw new TypeError(`Subject id must be an integer, received ${typeof id === 'number' ? id : typeof id}.`);
+  }
+  if (id < 1) {
+    throw new RangeError(`Subject id must be a positive integer (>= 1), received ${id}.`);
+  }
+  const idx = subjectsStore.findIndex((s) => s.id === id);
+  if (idx !== -1) {
+    subjectsStore.splice(idx, 1);
+    invalidateSubjectCache();
+    return true;
+  }
+  return false;
+}
 
 /**
  * Safely replace the internal subject cache with a validated, deep-cloned array.
@@ -11,14 +80,7 @@ export function setSubjectCache(subjectsList) {
   if (!Array.isArray(subjectsList)) {
     throw new TypeError(`Expected an array of subjects for setSubjectCache, received ${typeof subjectsList}.`);
   }
-  subjectsList.forEach((sub, idx) => {
-    if (!sub || typeof sub !== 'object' || Array.isArray(sub)) {
-      throw new TypeError(`Subject item at index ${idx} must be a non-null object.`);
-    }
-    if (typeof sub.name !== 'string' || sub.name.trim().length === 0) {
-      throw new TypeError(`Subject item at index ${idx} must have a non-empty string "name".`);
-    }
-  });
+  subjectsList.forEach((sub, idx) => validateSubjectItem(sub, `Subject item at index ${idx}`));
   cachedActiveSubjects = structuredClone(subjectsList);
 }
 

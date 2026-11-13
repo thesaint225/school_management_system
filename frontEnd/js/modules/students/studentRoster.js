@@ -1,6 +1,6 @@
 // Student Roster & Grid Directory Module
 
-export function studentInfo(student) {
+function studentInfo(student) {
   return `
     <div class="student-card" data-id="${student.id}" role="button" tabindex="0" aria-label="View profile of ${student.name}">
       <span class="student-id">#${student.id}</span>
@@ -15,7 +15,16 @@ export function studentInfo(student) {
   `;
 }
 
+let isVisible = false;
+let currentStudentsList = [];
+let currentOnStudentClick = null;
+
 export function initStudentRoster(students, onStudentClick) {
+  currentStudentsList = Array.isArray(students) ? students : [];
+  if (typeof onStudentClick === 'function') {
+    currentOnStudentClick = onStudentClick;
+  }
+
   const showStudentsBtn = document.querySelector('#showStudentsBtn');
   const studentList = document.querySelector('#studentList');
   const totalStudentsCount = document.querySelector('#totalStudentsCount');
@@ -24,23 +33,24 @@ export function initStudentRoster(students, onStudentClick) {
 
   // Populate Dashboard Summary Counters
   if (totalStudentsCount) {
-    totalStudentsCount.textContent = students.length;
+    totalStudentsCount.textContent = currentStudentsList.length;
   }
 
   if (totalClassesCount) {
-    const classList = students.map((s) => s.class);
+    const classList = currentStudentsList.map((s) => s.class);
     const uniqueClasses = new Set(classList);
     totalClassesCount.textContent = uniqueClasses.size;
   }
 
-  // Toggle Show / Hide Students
-  let isVisible = false;
-
   if (showStudentsBtn && studentList) {
-    showStudentsBtn.addEventListener('click', () => {
+    if (isVisible) {
+      studentList.innerHTML = currentStudentsList.map(studentInfo).join('');
+    }
+
+    showStudentsBtn.onclick = () => {
       isVisible = !isVisible;
       if (isVisible) {
-        studentList.innerHTML = students.map(studentInfo).join('');
+        studentList.innerHTML = currentStudentsList.map(studentInfo).join('');
         showStudentsBtn.textContent = 'Hide Students';
         showStudentsBtn.setAttribute('aria-expanded', 'true');
       } else {
@@ -48,32 +58,32 @@ export function initStudentRoster(students, onStudentClick) {
         showStudentsBtn.textContent = 'Show Students';
         showStudentsBtn.setAttribute('aria-expanded', 'false');
       }
-    });
+    };
 
     // Student Card click handler
-    studentList.addEventListener('click', (e) => {
+    studentList.onclick = (e) => {
       const card = e.target.closest('.student-card');
       if (!card) return;
       const clickedId = Number(card.dataset.id);
-      const selected = students.find((s) => s.id === clickedId);
+      const selected = currentStudentsList.find((s) => s.id === clickedId);
       if (!selected) return;
 
       const actionBtn = e.target.closest('[data-action]');
       const action = actionBtn ? actionBtn.dataset.action : 'view';
 
-      if (onStudentClick) {
-        onStudentClick(selected, action);
+      if (currentOnStudentClick) {
+        currentOnStudentClick(selected, action);
       }
-    });
+    };
   }
 
   // "View all →" button from Top Achievers widget
   if (viewAllAchieversBtn && showStudentsBtn && studentList) {
-    viewAllAchieversBtn.addEventListener('click', () => {
+    viewAllAchieversBtn.onclick = () => {
       if (!isVisible) {
         showStudentsBtn.click();
       }
       studentList.scrollIntoView({ behavior: 'smooth' });
-    });
+    };
   }
 }

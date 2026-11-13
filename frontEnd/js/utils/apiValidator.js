@@ -28,7 +28,7 @@ export class ApiValidationError extends Error {
  * @param {*} value
  * @returns {boolean}
  */
-export function isObject(value) {
+function isObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
@@ -659,7 +659,7 @@ export function validateCalendarEventList(data, endpoint = 'Calendar Event List 
  * @param {string} endpoint
  * @returns {Object}
  */
-export function validateSubjectScoreItem(item, path, endpoint) {
+function validateSubjectScoreItem(item, path, endpoint) {
   assertObject(item, path, endpoint);
 
   const subjectName = assertString(item.subjectName, `${path}.subjectName`, endpoint, { minLength: 1 });
@@ -775,3 +775,30 @@ export function validateDeleteClassResult(data, endpoint = 'Delete Class API') {
     success: true,
   };
 }
+
+export const Validator = Object.freeze({
+  ApiValidationError,
+  assertObject,
+  assertString,
+  assertNumber,
+  assertBoolean,
+  assertArray,
+  assertDateString,
+  assertEnum,
+  validateFee,
+  validateStudent,
+  validateStudentList,
+  validateTeacher,
+  validateTeacherList,
+  validateClassResponse,
+  validateClassResponseList,
+  validateSubject,
+  validateSubjectList,
+  validateAcademicTerm,
+  validateAcademicTermList,
+  validateCalendarEvent,
+  validateCalendarEventList,
+  validateStudentReport,
+  validateStudentReportList,
+  validateDeleteClassResult,
+});

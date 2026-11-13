@@ -1,3 +1,5 @@
+import { isValidISODateString } from '../utils/dateUtils.js';
+
 const academicTerms = [
   {
     id: 'term-1-2026',
@@ -238,6 +240,8 @@ const calendarItems = [
   },
 ];
 
+const ALLOWED_CALENDAR_CATEGORIES = new Set(['term', 'event', 'exam', 'holiday', 'deadline']);
+
 /**
  * Returns a defensive deep clone of all calendar event items so callers
  * cannot mutate internal calendar data.
@@ -271,11 +275,27 @@ export function updateCalendarItems(newItems) {
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
       throw new TypeError(`Calendar item at index ${idx} must be a non-null object.`);
     }
-    if (typeof item.title !== 'string' || item.title.trim().length === 0) {
-      throw new TypeError(`Calendar item at index ${idx} must have a non-empty string "title".`);
+    if (typeof item.title !== 'string') {
+      throw new TypeError(`Calendar item at index ${idx} must have a string "title".`);
     }
-    if (typeof item.date !== 'string' || Number.isNaN(Date.parse(item.date))) {
-      throw new RangeError(`Calendar item at index ${idx} must have a valid date string.`);
+    if (item.title.trim().length === 0) {
+      throw new RangeError(`Calendar item at index ${idx} must have a non-empty string "title".`);
+    }
+    if (typeof item.date !== 'string') {
+      throw new TypeError(`Calendar item at index ${idx} must have a string "date".`);
+    }
+    if (!isValidISODateString(item.date)) {
+      throw new RangeError(`Calendar item at index ${idx} must have a valid YYYY-MM-DD date string, received "${item.date}".`);
+    }
+    if (item.category !== undefined) {
+      if (typeof item.category !== 'string') {
+        throw new TypeError(`Calendar item at index ${idx} "category" must be a string.`);
+      }
+      if (!ALLOWED_CALENDAR_CATEGORIES.has(item.category)) {
+        throw new RangeError(
+          `Calendar item at index ${idx} has invalid category "${item.category}". Allowed: ${Array.from(ALLOWED_CALENDAR_CATEGORIES).join(', ')}.`
+        );
+      }
     }
   });
 
@@ -299,14 +319,28 @@ export function updateAcademicTerms(newTerms) {
     if (!term || typeof term !== 'object' || Array.isArray(term)) {
       throw new TypeError(`Academic term at index ${idx} must be a non-null object.`);
     }
-    if (typeof term.name !== 'string' || term.name.trim().length === 0) {
-      throw new TypeError(`Academic term at index ${idx} must have a non-empty string "name".`);
+    if (typeof term.name !== 'string') {
+      throw new TypeError(`Academic term at index ${idx} must have a string "name".`);
     }
-    if (typeof term.startDate !== 'string' || Number.isNaN(Date.parse(term.startDate))) {
-      throw new RangeError(`Academic term at index ${idx} must have a valid "startDate".`);
+    if (term.name.trim().length === 0) {
+      throw new RangeError(`Academic term at index ${idx} must have a non-empty string "name".`);
     }
-    if (typeof term.endDate !== 'string' || Number.isNaN(Date.parse(term.endDate))) {
-      throw new RangeError(`Academic term at index ${idx} must have a valid "endDate".`);
+    if (typeof term.startDate !== 'string') {
+      throw new TypeError(`Academic term at index ${idx} must have a string "startDate".`);
+    }
+    if (!isValidISODateString(term.startDate)) {
+      throw new RangeError(`Academic term at index ${idx} must have a valid YYYY-MM-DD "startDate", received "${term.startDate}".`);
+    }
+    if (typeof term.endDate !== 'string') {
+      throw new TypeError(`Academic term at index ${idx} must have a string "endDate".`);
+    }
+    if (!isValidISODateString(term.endDate)) {
+      throw new RangeError(`Academic term at index ${idx} must have a valid YYYY-MM-DD "endDate", received "${term.endDate}".`);
+    }
+    if (term.startDate.trim() > term.endDate.trim()) {
+      throw new RangeError(
+        `Academic term at index ${idx} must have "startDate" (${term.startDate}) before or equal to "endDate" (${term.endDate}).`
+      );
     }
   });
 
@@ -314,4 +348,11 @@ export function updateAcademicTerms(newTerms) {
   academicTerms.length = 0;
   academicTerms.push(...cloned);
 }
+
+export const CalendarStore = Object.freeze({
+  getItems: getCalendarItems,
+  getTerms: getAcademicTerms,
+  setItems: updateCalendarItems,
+  setTerms: updateAcademicTerms,
+});
 

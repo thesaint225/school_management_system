@@ -2,22 +2,14 @@
 // Connects to Spring Boot via updateStudentInDb and syncs in-memory data with the database
 
 import { updateStudentInDb, deleteStudentFromDb } from '../../api/studentApi.js';
+import { updateStudentInStore } from '../../data/studentsData.js';
 import { downloadReportPdfFromDb } from '../../api/resultApi.js';
 import { populateSubjectCheckboxes } from '../subjects/subjectUtils.js';
 import { populateClassSelectOptions } from '../classes/classUtils.js';
+import { getInitials } from '../../utils/domUtils.js';
 
-export function createSubjectPill(subject) {
+function createSubjectPill(subject) {
   return `<span class="subject-pill">${subject}</span>`;
-}
-
-export function getFirstLetter(word) {
-  return word ? word[0] : '';
-}
-
-export function getInitials(name) {
-  const words = (name || '').trim().split(' ');
-  const initials = words.map(getFirstLetter).join('');
-  return (initials || 'ST').toUpperCase();
 }
 
 const AVAILABLE_SUBJECTS = [
@@ -37,7 +29,7 @@ const AVAILABLE_SUBJECTS = [
 let activeStudent = null;
 let onStudentUpdateCallback = null;
 
-export function renderStudentProfile(student) {
+function renderStudentProfile(student) {
   const subjects = student.subjects || [];
   const subjectsHTML = subjects.map(createSubjectPill).join('');
   const statusClass = (student.feesStatus || 'pending').toLowerCase();
@@ -153,7 +145,7 @@ export function renderStudentProfile(student) {
   `;
 }
 
-export function renderDeleteConfirmation(student) {
+function renderDeleteConfirmation(student) {
   const initials = getInitials(student.name);
   return `
     <div class="delete-confirmation-card">
@@ -192,7 +184,7 @@ export function renderDeleteConfirmation(student) {
   `;
 }
 
-export function renderStudentEditForm(student) {
+function renderStudentEditForm(student) {
   const initials = getInitials(student.name);
   const enrolled = new Set(student.subjects || []);
   const guardian = student.guardian || { name: '', relation: 'Father', phone: '' };
@@ -619,7 +611,8 @@ function attachEditFormListeners(student) {
         updatedStudentRecord.subjects = selectedSubjects;
       }
 
-      // Mutate current student record in place
+      // Sync encapsulated student store and local modal snapshot
+      updateStudentInStore(student.id, updatedStudentRecord);
       Object.assign(student, updatedStudentRecord);
 
       // Trigger global UI updates (Dashboard, Roster, Top Achievers)
@@ -652,11 +645,7 @@ function attachEditFormListeners(student) {
   });
 }
 
-const studentModal = document.querySelector('#studentModal');
-const closeModalBtn = document.querySelector('#closeModalBtn');
-const modalBody = document.querySelector('#modalBody');
-
-export function showToastNotification(message) {
+function showToastNotification(message) {
   let toast = document.querySelector('#appToastNotification');
   if (!toast) {
     toast = document.createElement('div');
@@ -677,6 +666,9 @@ export function openStudentModal(student, mode = 'view', onUpdate) {
   if (onUpdate) {
     onStudentUpdateCallback = onUpdate;
   }
+
+  const studentModal = document.querySelector('#studentModal');
+  const modalBody = document.querySelector('#modalBody');
 
   if (studentModal && modalBody) {
     if (mode === 'edit') {
@@ -711,7 +703,7 @@ export function openStudentModal(student, mode = 'view', onUpdate) {
             }
 
             closeStudentModal();
-            showToastNotification(`🗑️ Successfully deleted <strong>${student.name}</strong> (#EDU-${student.id.toString().padStart(4, '0')})`);
+            showToastNotification(`🗑️ Successfully deleted ${student.name} (#EDU-${student.id.toString().padStart(4, '0')})`);
           } catch (err) {
             if (feedback) {
               feedback.textContent = `❌ Delete failed: ${err.message}`;
@@ -757,7 +749,8 @@ export function openStudentModal(student, mode = 'view', onUpdate) {
   }
 }
 
-export function closeStudentModal() {
+function closeStudentModal() {
+  const studentModal = document.querySelector('#studentModal');
   if (studentModal) {
     studentModal.classList.remove('active');
     studentModal.setAttribute('aria-hidden', 'true');
@@ -769,6 +762,9 @@ export function initStudentModal(onUpdate) {
   if (onUpdate) {
     onStudentUpdateCallback = onUpdate;
   }
+
+  const studentModal = document.querySelector('#studentModal');
+  const closeModalBtn = document.querySelector('#closeModalBtn');
 
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', closeStudentModal);

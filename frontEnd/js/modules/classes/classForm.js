@@ -2,8 +2,12 @@
 // Connects to Spring Boot backend via classApi.js and enforces accessible blur validation
 
 import { createClassInDb } from '../../api/classApi.js';
+import { addClassToStore } from './classUtils.js';
+import { setFieldError } from '../../utils/domUtils.js';
 
-export function initClassForm(classes, onClassAdded) {
+export function initClassForm(arg1, arg2) {
+  const onClassAdded = typeof arg1 === 'function' ? arg1 : arg2;
+  const legacyClassesArray = Array.isArray(arg1) ? arg1 : null;
   const form = document.querySelector('#classCreationForm');
   const feedback = document.querySelector('#classFormFeedback');
   const submitBtn = form?.querySelector('button[type="submit"]');
@@ -15,32 +19,6 @@ export function initClassForm(classes, onClassAdded) {
 
   const descInput = form.querySelector('#classDescription');
   const activeInput = form.querySelector('#classActive');
-
-  function setFieldError(inputEl, errorEl, message) {
-    if (message) {
-      if (inputEl) {
-        inputEl.classList.add('is-invalid');
-        inputEl.classList.remove('is-valid');
-        inputEl.setAttribute('aria-invalid', 'true');
-      }
-      if (errorEl) {
-        errorEl.textContent = `⚠️ ${message}`;
-        errorEl.classList.add('visible');
-      }
-      return false;
-    } else {
-      if (inputEl) {
-        inputEl.classList.remove('is-invalid');
-        inputEl.classList.add('is-valid');
-        inputEl.setAttribute('aria-invalid', 'false');
-      }
-      if (errorEl) {
-        errorEl.textContent = '';
-        errorEl.classList.remove('visible');
-      }
-      return true;
-    }
-  }
 
   function validateTitle() {
     const val = nameInput?.value.trim() || '';
@@ -81,7 +59,10 @@ export function initClassForm(classes, onClassAdded) {
 
     try {
       const createdClass = await createClassInDb(classDto);
-      classes.push(createdClass);
+      addClassToStore(createdClass);
+      if (legacyClassesArray) {
+        legacyClassesArray.push(createdClass);
+      }
 
       if (feedback) {
         feedback.className = 'form-feedback success';

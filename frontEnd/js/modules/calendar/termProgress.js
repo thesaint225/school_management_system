@@ -2,13 +2,13 @@
 import { getAcademicTerms } from '../../data/calendarData.js';
 import { formatTermRange, calculateDaysBetween } from '../../utils/dateUtils.js';
 
-export function getActiveAcademicTerm() {
+function getActiveAcademicTerm() {
   const terms = getAcademicTerms();
   const active = terms.find((t) => t.status === 'Active');
   return active || terms[0];
 }
 
-export function calculateTermProgress(term = getActiveAcademicTerm()) {
+function calculateTermProgress(term = getActiveAcademicTerm()) {
   const now = new Date();
   const start = new Date(term.startDate + 'T00:00:00');
   const end = new Date(term.endDate + 'T23:59:59');

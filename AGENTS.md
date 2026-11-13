@@ -57,6 +57,9 @@ Detailed step-by-step workflows live in `.agents/skills/`. **Always activate and
 - **JavaScript Encapsulation & State Protection (`javascript-encapsulation-protection`)**:
   - Keep internal module state private, prefer controlled public getters/mutators with input validation over exporting mutable objects/arrays directly, prevent shared-reference mutations (`structuredClone()` or shallow copies where appropriate), and never treat frontend encapsulation as a substitute for Spring Security and backend role/ownership checks.
   - Follow `.agents/skills/javascript-encapsulation-protection/SKILL.md` whenever creating, inspecting, or refactoring JavaScript modules, state stores, or caches, and write isolation tests to verify external mutations cannot corrupt internal state.
+- **JavaScript Architecture, ES Modules & Namespaces (`javascript-architecture`)**:
+  - Organise frontend code using ES Modules with explicit public/private boundaries, cohesive frozen domain namespaces (`Object.freeze`), strict one-way dependency flow (no circular dependencies or unnecessary IIFEs), and clear separation between UI, state stores, API services, and shared utilities.
+  - Follow `.agents/skills/javascript-architecture/SKILL.md` whenever creating JavaScript modules, refactoring frontend architecture, designing namespaces, or reviewing encapsulation and module boundaries.
 - **Frontend Browser QA (`playwright-browser-qa`)**:
   - Verify real user outcomes (not just clicks) and produce an honest, evidence-based QA report for frontend changes.
   - Follow `.agents/skills/playwright-browser-qa/SKILL.md` whenever verifying frontend UI changes with Playwright MCP.

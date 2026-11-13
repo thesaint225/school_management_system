@@ -1,71 +1,40 @@
-import { students, setStudents, removeStudentById } from './data/studentsData.js';
-import { fetchStudentsFromDb } from './api/studentApi.js';
-import { teachers, setTeachers, removeTeacherById } from './data/teachersData.js';
-import { fetchTeachersFromDb } from './api/teacherApi.js';
-import {
-  getAcademicTerms,
-  getCalendarItems,
-  updateCalendarItems,
-  updateAcademicTerms,
-} from './data/calendarData.js';
-import { fetchCalendarEventsFromDb, fetchAcademicTermsFromDb } from './api/calendarApi.js';
-import {
-  formatSchoolTime,
-  formatTermRange,
-  formatAgendaDate,
-  toISODateString,
-} from './utils/dateUtils.js';
-import { initTopAchievers } from './modules/students/topAchievers.js';
-import {
-  initStudentModal,
-  openStudentModal,
-} from './modules/students/studentModal.js';
-import { initStudentRoster } from './modules/students/studentRoster.js';
-import { calculateAttendanceRate } from './modules/attendance/attendanceAnalytics.js';
-import { initAttendanceRoster } from './modules/attendance/attendanceRoster.js';
-import { initCalendarModule, refreshCalendarViews } from './modules/calendar/calendarModule.js';
-import { initStudentForm } from './modules/students/studentForm.js';
-import { initTeacherModal, openTeacherModal } from './modules/teachers/teacherModal.js';
-import { initTeacherRoster } from './modules/teachers/teacherRoster.js';
-import { initTeacherForm } from './modules/teachers/teacherForm.js';
-import { fetchSubjectsFromDb } from './api/subjectApi.js';
-import { initSubjectModal, openSubjectModal } from './modules/subjects/subjectModal.js';
-import { initSubjectRoster } from './modules/subjects/subjectRoster.js';
-import { initSubjectForm } from './modules/subjects/subjectForm.js';
-import { invalidateSubjectCache } from './modules/subjects/subjectUtils.js';
-import { fetchClassesFromDb } from './api/classApi.js';
-import { initClassModal, openClassModal } from './modules/classes/classModal.js';
-import { initClassRoster } from './modules/classes/classRoster.js';
-import { initClassForm } from './modules/classes/classForm.js';
-import { invalidateClassCache } from './modules/classes/classUtils.js';
-import { initResultsModule } from './modules/results/resultsMain.js';
+import { DateUtils } from './utils/dateUtils.js';
+import { Student } from './modules/students/index.js';
+import { Teacher } from './modules/teachers/index.js';
+import { ClassRoom } from './modules/classes/index.js';
+import { Subject } from './modules/subjects/index.js';
+import { Attendance } from './modules/attendance/index.js';
+import { Calendar } from './modules/calendar/index.js';
+import { Results } from './modules/results/index.js';
 
 // 1. Live School Clock (Accra GMT)
 const liveTime = document.querySelector('#liveTime');
 
 function updateLiveClock() {
   if (liveTime) {
-    liveTime.textContent = formatSchoolTime(new Date());
+    liveTime.textContent = DateUtils.formatSchoolTime(new Date());
   }
 }
 updateLiveClock();
 setInterval(updateLiveClock, 1000);
 
-// 2. Populate Dashboard Overview Dynamic Statistics from `students` Array
+// 2. Populate Dashboard Overview Dynamic Statistics from `Student` & `Calendar` Domains
 export function renderDashboardOverview() {
+  const currentStudents = Student.getAll();
+
   // A. Total Students & Unique Classes
   const dashTotalStudents = document.querySelector('#dashTotalStudents');
   const dashClassesCount = document.querySelector('#dashClassesCount');
   if (dashTotalStudents) {
-    dashTotalStudents.textContent = students.length;
+    dashTotalStudents.textContent = currentStudents.length;
   }
   if (dashClassesCount) {
-    const uniqueClasses = new Set(students.map((s) => s.class));
+    const uniqueClasses = new Set(currentStudents.map((s) => s.class));
     dashClassesCount.textContent = `Enrolled across ${uniqueClasses.size} classes`;
   }
 
   // B. Attendance Analytics
-  const stats = calculateAttendanceRate(students);
+  const stats = Attendance.calculateRate(currentStudents);
   const dashAttendanceRate = document.querySelector('#dashAttendanceRate');
   const dashCirclePct = document.querySelector('#dashCirclePct');
   const dashAttendanceCircle = document.querySelector('#dashAttendanceCircle');
@@ -91,20 +60,20 @@ export function renderDashboardOverview() {
   // C. Top Achievers (Students with GPA >= 3.7)
   const dashAchieversCount = document.querySelector('#dashAchieversCount');
   if (dashAchieversCount) {
-    const highAchievers = students.filter((s) => s.gpa >= 3.7);
+    const highAchievers = currentStudents.filter((s) => s.gpa >= 3.7);
     dashAchieversCount.textContent = highAchievers.length;
   }
 
   // D. Academic Term Stat Card
   const dashTermName = document.querySelector('#dashTermName');
   const dashTermRange = document.querySelector('#dashTermRange');
-  const terms = getAcademicTerms();
+  const terms = Calendar.getTerms();
   const activeTerm = terms.find((t) => t.status === 'Active') || terms[0];
   if (dashTermName && activeTerm) {
     dashTermName.textContent = activeTerm.name.split(' (')[0];
   }
   if (dashTermRange && activeTerm) {
-    dashTermRange.textContent = formatTermRange(
+    dashTermRange.textContent = DateUtils.formatTermRange(
       activeTerm.startDate,
       activeTerm.endDate,
     );
@@ -114,13 +83,13 @@ export function renderDashboardOverview() {
   const dashUpcomingList = document.querySelector('#dashUpcomingList');
   if (dashUpcomingList) {
     const now = new Date();
-    const todayISO = toISODateString(
+    const todayISO = DateUtils.toISODateString(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
     );
 
-    const upcoming = getCalendarItems()
+    const upcoming = Calendar.getItems()
       .filter((item) => item.date >= todayISO)
       .sort((a, b) => (a.date > b.date ? 1 : -1))
       .slice(0, 3);
@@ -169,29 +138,30 @@ export function renderDashboardOverview() {
 // 3. Initialize Student Modal Controls
 const handleStudentModalChange = (student, action) => {
   if (action === 'delete' && student) {
-    removeStudentById(student.id);
+    Student.removeById(student.id);
   }
   refreshAllStudentViews();
 };
 
-initStudentModal(handleStudentModalChange);
+Student.initModal(handleStudentModalChange);
 
 // 4. Helper to Refresh All Connected Views
 export function refreshAllStudentViews() {
+  const currentStudents = Student.getAll();
   renderDashboardOverview();
-  initTopAchievers(students, (s) => openStudentModal(s, 'view', handleStudentModalChange));
-  initStudentRoster(students, (s, action) => openStudentModal(s, action || 'view', handleStudentModalChange));
-  initAttendanceRoster(students, (s) => {
-    openStudentModal(s, 'view', handleStudentModalChange);
+  Student.initTopAchievers(currentStudents, (s) => Student.openModal(s, 'view', handleStudentModalChange));
+  Student.initRoster(currentStudents, (s, action) => Student.openModal(s, action || 'view', handleStudentModalChange));
+  Attendance.initRoster(currentStudents, (s) => {
+    Student.openModal(s, 'view', handleStudentModalChange);
     renderDashboardOverview();
   });
 }
 
 // 5. Initialize Academic Calendar Module (Option B Grid + Sidebar)
-initCalendarModule();
+Calendar.init();
 
 // 6. Initialize Student Registration Form (Persists directly to Spring Boot & Database)
-initStudentForm(students, () => {
+Student.initForm(() => {
   refreshAllStudentViews();
 });
 
@@ -200,160 +170,150 @@ let teacherRosterController = null;
 
 const handleTeacherModalChange = (teacher, action) => {
   if (action === 'delete' && teacher) {
-    removeTeacherById(teacher.id);
+    Teacher.removeById(teacher.id);
   }
   refreshAllTeacherViews();
 };
 
-initTeacherModal(handleTeacherModalChange);
+Teacher.initModal(handleTeacherModalChange);
 
 export function refreshAllTeacherViews() {
   if (teacherRosterController) {
     teacherRosterController.refresh();
   } else {
-    teacherRosterController = initTeacherRoster(teachers, (t, action) => {
-      openTeacherModal(t, action || 'view', handleTeacherModalChange);
+    teacherRosterController = Teacher.initRoster(Teacher.getAll(), (t, action) => {
+      Teacher.openModal(t, action || 'view', handleTeacherModalChange);
     });
   }
 }
 
-initTeacherForm(teachers, () => {
+Teacher.initForm(() => {
   refreshAllTeacherViews();
 });
 
 // 8. Initialize Subject & Course Management
-const subjects = [];
 let subjectRosterController = null;
 
 const handleSubjectModalChange = (subject, action) => {
   if (action === 'delete' && subject) {
-    const idx = subjects.findIndex((s) => s.id === subject.id);
-    if (idx !== -1) {
-      subjects.splice(idx, 1);
-    }
+    Subject.removeById(subject.id);
   }
-  invalidateSubjectCache();
+  Subject.invalidateCache();
   refreshAllSubjectViews();
 };
 
-initSubjectModal(handleSubjectModalChange);
+Subject.initModal(handleSubjectModalChange);
 
 export function refreshAllSubjectViews() {
   if (subjectRosterController) {
     subjectRosterController.refresh();
   } else {
-    subjectRosterController = initSubjectRoster(subjects, (sub, action) => {
-      openSubjectModal(sub, action || 'view', handleSubjectModalChange);
+    subjectRosterController = Subject.initRoster((sub, action) => {
+      Subject.openModal(sub, action || 'view', handleSubjectModalChange);
     });
   }
 }
 
-initSubjectForm(subjects, () => {
-  invalidateSubjectCache();
+Subject.initForm(() => {
+  Subject.invalidateCache();
   refreshAllSubjectViews();
 });
 
 // 9. Initialize Class & Roster Management
-const classes = [];
 let classRosterController = null;
 
 const handleClassModalChange = async (cls, action) => {
   if (action === 'delete' && cls) {
-    const idx = classes.findIndex((c) => c.id === cls.id);
-    if (idx !== -1) {
-      classes.splice(idx, 1);
-    }
+    ClassRoom.removeById(cls.id);
   }
-  invalidateClassCache();
+  ClassRoom.invalidateCache();
   await syncClassesFromDatabase();
   // Also resync students as classes or assignments may have changed
   await syncStudentsFromDatabase();
 };
 
-initClassModal(handleClassModalChange);
+ClassRoom.initModal(handleClassModalChange);
 
 export function refreshAllClassViews() {
   if (classRosterController) {
     classRosterController.refresh();
   } else {
-    classRosterController = initClassRoster(classes, (cls, action) => {
-      openClassModal(cls, action || 'view', handleClassModalChange);
+    classRosterController = ClassRoom.initRoster((cls, action) => {
+      ClassRoom.openModal(cls, action || 'view', handleClassModalChange);
     });
   }
 }
 
-initClassForm(classes, () => {
-  invalidateClassCache();
+ClassRoom.initForm(() => {
+  ClassRoom.invalidateCache();
   syncClassesFromDatabase();
 });
 
 // 10. Initialize Results & Report Cards Module
-initResultsModule();
+Results.init();
 
 async function syncClassesFromDatabase() {
-  const dbClasses = await fetchClassesFromDb();
+  const dbClasses = await ClassRoom.fetchAllFromDb();
   if (dbClasses && Array.isArray(dbClasses)) {
-    classes.length = 0;
-    classes.push(...dbClasses);
+    ClassRoom.setAll(dbClasses);
   }
   refreshAllClassViews();
 }
 
 async function syncStudentsFromDatabase() {
-  const dbStudents = await fetchStudentsFromDb();
+  const dbStudents = await Student.fetchAllFromDb();
   if (dbStudents && Array.isArray(dbStudents) && dbStudents.length > 0) {
-    setStudents(dbStudents);
+    Student.setAll(dbStudents);
   }
   refreshAllStudentViews();
 }
 
-// 10. Initial Bootstrap: Load live records from Database API (with graceful fallback)
+// 11. Initial Bootstrap: Load live records from Database API (with graceful fallback)
 async function bootstrapDataFromDatabase() {
   // A. Subjects
-  const dbSubjects = await fetchSubjectsFromDb();
+  const dbSubjects = await Subject.fetchAllFromDb();
   if (dbSubjects && Array.isArray(dbSubjects) && dbSubjects.length > 0) {
-    subjects.length = 0;
-    subjects.push(...dbSubjects);
-    console.log(`🚀 Subjects Directory successfully synced with ${subjects.length} courses from database.`);
+    Subject.setAll(dbSubjects);
+    console.log(`🚀 Subjects Directory successfully synced with ${Subject.getAll().length} courses from database.`);
   }
   refreshAllSubjectViews();
 
   // B. Classes
   await syncClassesFromDatabase();
-  console.log(`🚀 Classes Directory successfully synced with ${classes.length} classes from database.`);
+  console.log(`🚀 Classes Directory successfully synced with ${ClassRoom.getAll().length} classes from database.`);
 
   // C. Students
   await syncStudentsFromDatabase();
-  console.log(`🚀 Dashboard successfully synced with ${students.length} students from database.`);
+  console.log(`🚀 Dashboard successfully synced with ${Student.getAll().length} students from database.`);
 
   // D. Teachers
-  const dbTeachers = await fetchTeachersFromDb();
+  const dbTeachers = await Teacher.fetchAllFromDb();
   if (dbTeachers && Array.isArray(dbTeachers) && dbTeachers.length > 0) {
-    setTeachers(dbTeachers);
-    console.log(`🚀 Teacher Directory successfully synced with ${teachers.length} teachers from database.`);
+    Teacher.setAll(dbTeachers);
+    console.log(`🚀 Teacher Directory successfully synced with ${Teacher.getAll().length} teachers from database.`);
   }
   refreshAllTeacherViews();
 
   // E. Results & Academic Reports
-  await initResultsModule();
+  await Results.init();
   console.log('🚀 Results & Report Cards module initialized.');
 
   // F. Academic Terms & Calendar Events
-  const dbTerms = await fetchAcademicTermsFromDb();
+  const dbTerms = await Calendar.fetchTermsFromDb();
   if (dbTerms && Array.isArray(dbTerms) && dbTerms.length > 0) {
-    updateAcademicTerms(dbTerms);
-    console.log(`🚀 Academic Terms successfully synced with ${getAcademicTerms().length} terms from database.`);
+    Calendar.setTerms(dbTerms);
+    console.log(`🚀 Academic Terms successfully synced with ${Calendar.getTerms().length} terms from database.`);
   }
 
-  const dbEvents = await fetchCalendarEventsFromDb();
+  const dbEvents = await Calendar.fetchEventsFromDb();
   if (dbEvents && Array.isArray(dbEvents) && dbEvents.length > 0) {
-    updateCalendarItems(dbEvents);
-    console.log(`🚀 Academic Calendar successfully synced with ${getCalendarItems().length} events from database.`);
+    Calendar.setItems(dbEvents);
+    console.log(`🚀 Academic Calendar successfully synced with ${Calendar.getItems().length} events from database.`);
   }
 
   // Refresh dashboard and calendar views with synced database records
   renderDashboardOverview();
-  refreshCalendarViews();
+  Calendar.refreshViews();
 }
 
 bootstrapDataFromDatabase();

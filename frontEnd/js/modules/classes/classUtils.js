@@ -2,6 +2,75 @@
 import { fetchClassesFromDb } from '../../api/classApi.js';
 
 let cachedActiveClasses = null;
+const classesStore = [];
+
+function validateClassItem(cls, label = 'Class item') {
+  if (!cls || typeof cls !== 'object' || Array.isArray(cls)) {
+    throw new TypeError(`${label} must be a non-null object.`);
+  }
+  if (typeof cls.name !== 'string') {
+    throw new TypeError(`${label} must have a string "name".`);
+  }
+  if (cls.name.trim().length === 0) {
+    throw new RangeError(`${label} must have a non-empty string "name".`);
+  }
+}
+
+/**
+ * Returns a defensive deep clone of all classes in the directory store.
+ * @returns {Array<Object>}
+ */
+export function getClasses() {
+  return structuredClone(classesStore);
+}
+
+/**
+ * Replaces the in-memory classes directory store with validated, deep-cloned records.
+ * @param {Array<Object>} classesList
+ */
+export function setClasses(classesList) {
+  if (!Array.isArray(classesList)) {
+    throw new TypeError(`Expected an array of classes for setClasses, received ${typeof classesList}.`);
+  }
+  classesList.forEach((cls, idx) => validateClassItem(cls, `Class item at index ${idx}`));
+  const cloned = structuredClone(classesList);
+  classesStore.length = 0;
+  classesStore.push(...cloned);
+}
+
+/**
+ * Adds a validated class record to the in-memory classes directory store.
+ * @param {Object} newClass
+ * @returns {Object} Deep clone of the added class
+ */
+export function addClassToStore(newClass) {
+  validateClassItem(newClass, 'New class');
+  const cloned = structuredClone(newClass);
+  classesStore.push(cloned);
+  invalidateClassCache();
+  return structuredClone(cloned);
+}
+
+/**
+ * Removes a class record by ID from the in-memory store.
+ * @param {number} id
+ * @returns {boolean}
+ */
+export function removeClassById(id) {
+  if (typeof id !== 'number' || !Number.isInteger(id)) {
+    throw new TypeError(`Class id must be an integer, received ${typeof id === 'number' ? id : typeof id}.`);
+  }
+  if (id < 1) {
+    throw new RangeError(`Class id must be a positive integer (>= 1), received ${id}.`);
+  }
+  const idx = classesStore.findIndex((c) => c.id === id);
+  if (idx !== -1) {
+    classesStore.splice(idx, 1);
+    invalidateClassCache();
+    return true;
+  }
+  return false;
+}
 
 /**
  * Safely replace the internal class cache with a validated, deep-cloned array.
@@ -11,14 +80,7 @@ export function setClassCache(classesList) {
   if (!Array.isArray(classesList)) {
     throw new TypeError(`Expected an array of classes for setClassCache, received ${typeof classesList}.`);
   }
-  classesList.forEach((cls, idx) => {
-    if (!cls || typeof cls !== 'object' || Array.isArray(cls)) {
-      throw new TypeError(`Class item at index ${idx} must be a non-null object.`);
-    }
-    if (typeof cls.name !== 'string' || cls.name.trim().length === 0) {
-      throw new TypeError(`Class item at index ${idx} must have a non-empty string "name".`);
-    }
-  });
+  classesList.forEach((cls, idx) => validateClassItem(cls, `Class item at index ${idx}`));
   cachedActiveClasses = structuredClone(classesList);
 }
 

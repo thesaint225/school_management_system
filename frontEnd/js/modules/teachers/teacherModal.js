@@ -2,25 +2,21 @@
 // Connects to Spring Boot API via teacherApi.js and handles accessible validation per AGENTS.md
 
 import { updateTeacherInDb, deleteTeacherFromDb } from '../../api/teacherApi.js';
+import { updateTeacherInStore } from '../../data/teachersData.js';
 import { populateSubjectCheckboxes } from '../subjects/subjectUtils.js';
 import { populateClassCheckboxes } from '../classes/classUtils.js';
+import { getInitials as computeInitials } from '../../utils/domUtils.js';
 
-export function createSubjectPill(subject) {
+function createSubjectPill(subject) {
   return `<span class="subject-pill">${subject}</span>`;
 }
 
-export function createClassPill(className) {
+function createClassPill(className) {
   return `<span class="class-pill">🏛️ ${className}</span>`;
 }
 
-export function getFirstLetter(word) {
-  return word ? word[0] : '';
-}
-
-export function getInitials(name) {
-  const words = (name || '').trim().split(' ');
-  const initials = words.map(getFirstLetter).join('');
-  return (initials || 'TR').toUpperCase();
+function getInitials(name) {
+  return computeInitials(name, 'TR');
 }
 
 const AVAILABLE_DEPARTMENTS = [
@@ -51,7 +47,7 @@ const AVAILABLE_SUBJECTS = [
 let activeTeacher = null;
 let onTeacherUpdateCallback = null;
 
-export function renderTeacherProfile(teacher) {
+function renderTeacherProfile(teacher) {
   const subjects = teacher.subjects || [];
   const subjectsHTML = subjects.map(createSubjectPill).join('');
   const classes = teacher.classes || [];
@@ -127,7 +123,7 @@ export function renderTeacherProfile(teacher) {
   `;
 }
 
-export function renderTeacherDeleteConfirmation(teacher) {
+function renderTeacherDeleteConfirmation(teacher) {
   const fullName = teacher.name || `${teacher.firstName || ''} ${teacher.lastName || ''}`;
   const initials = getInitials(fullName);
   return `
@@ -167,7 +163,7 @@ export function renderTeacherDeleteConfirmation(teacher) {
   `;
 }
 
-export function renderTeacherEditForm(teacher) {
+function renderTeacherEditForm(teacher) {
   const fullName = teacher.name || `${teacher.firstName || ''} ${teacher.lastName || ''}`;
   const initials = getInitials(fullName);
   const enrolled = new Set(teacher.subjects || []);
@@ -570,6 +566,7 @@ function wireTeacherEditFormValidation(teacher, modalBody) {
 
     try {
       const savedResult = await updateTeacherInDb(teacher.id, updatedDto);
+      updateTeacherInStore(teacher.id, savedResult);
       Object.assign(teacher, savedResult);
 
       if (typeof onTeacherUpdateCallback === 'function') {
@@ -674,7 +671,7 @@ export function openTeacherModal(teacher, mode = 'view', updateCallback = null) 
   document.body.classList.add('modal-open');
 }
 
-export function closeTeacherModal() {
+function closeTeacherModal() {
   const modal = document.querySelector('#teacherModal');
   if (!modal) return;
   modal.classList.remove('active');

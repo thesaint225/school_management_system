@@ -11,20 +11,21 @@ import {
 } from '../../api/classApi.js';
 import { fetchStudentsFromDb } from '../../api/studentApi.js';
 import { fetchTeachersFromDb } from '../../api/teacherApi.js';
-import { teachers } from '../../data/teachersData.js';
-import { getInitials } from '../students/studentModal.js';
+import { getTeachers, setTeachers } from '../../data/teachersData.js';
+import { getInitials } from '../../utils/domUtils.js';
 
 let activeClass = null;
 let onClassUpdateCallback = null;
 
-export function renderClassDetails(cls, students = [], teacherList = teachers) {
+function renderClassDetails(cls, students = [], teacherList = null) {
   const isActive = cls.active !== false;
   const statusBadgeClass = isActive ? 'status-badge-active' : 'status-badge-danger';
   const statusText = isActive ? 'Active' : 'Archived / Inactive';
   const studentCount = students.length;
   const description = cls.description || 'No detailed syllabus or level overview provided.';
 
-  const sourceTeachers = Array.isArray(teacherList) && teacherList.length > 0 ? teacherList : teachers;
+  const currentTeachers = getTeachers();
+  const sourceTeachers = Array.isArray(teacherList) && teacherList.length > 0 ? teacherList : currentTeachers;
   const assignedTeachers = sourceTeachers.filter((t) => (t.classes || []).includes(cls.name));
   const teachersHTML = assignedTeachers.length > 0
     ? assignedTeachers.map((t) => {
@@ -137,7 +138,7 @@ export function renderClassDetails(cls, students = [], teacherList = teachers) {
   `;
 }
 
-export function renderClassEditForm(cls) {
+function renderClassEditForm(cls) {
   return `
     <div class="edit-modal-top">
       <div class="profile-avatar class-modal-avatar">🏛️</div>
@@ -188,7 +189,7 @@ export function renderClassEditForm(cls) {
   `;
 }
 
-export function renderAssignStudentForm(cls) {
+function renderAssignStudentForm(cls) {
   return `
     <div class="edit-modal-top">
       <div class="profile-avatar class-modal-avatar">➕</div>
@@ -223,7 +224,7 @@ export function renderAssignStudentForm(cls) {
   `;
 }
 
-export function renderMoveStudentForm(cls, student) {
+function renderMoveStudentForm(cls, student) {
   return `
     <div class="edit-modal-top">
       <div class="profile-avatar class-modal-avatar">⇄</div>
@@ -265,7 +266,7 @@ export function renderMoveStudentForm(cls, student) {
   `;
 }
 
-export function renderClassDeleteConfirmation(cls) {
+function renderClassDeleteConfirmation(cls) {
   const isActive = cls.active !== false;
   return `
     <div class="delete-confirmation-card">
@@ -649,12 +650,11 @@ export async function openClassModal(cls, mode = 'view', updateCallback = null, 
       students = [];
     }
 
-    if (!teachers || teachers.length === 0) {
+    if (getTeachers().length === 0) {
       try {
         const dbTeachers = await fetchTeachersFromDb();
         if (dbTeachers && Array.isArray(dbTeachers) && dbTeachers.length > 0) {
-          teachers.length = 0;
-          teachers.push(...dbTeachers);
+          setTeachers(dbTeachers);
         }
       } catch (err) {
         console.warn('[classModal] Could not fetch teachers from database:', err);
@@ -662,7 +662,7 @@ export async function openClassModal(cls, mode = 'view', updateCallback = null, 
     }
 
     cls.studentCount = students.length;
-    modalBody.innerHTML = renderClassDetails(cls, students, teachers);
+    modalBody.innerHTML = renderClassDetails(cls, students, getTeachers());
 
     const editBtn = modalBody.querySelector('#editClassBtn');
     const editBottomBtn = modalBody.querySelector('#editClassBottomBtn');
@@ -691,7 +691,7 @@ export async function openClassModal(cls, mode = 'view', updateCallback = null, 
   document.body.classList.add('modal-open');
 }
 
-export function closeClassModal() {
+function closeClassModal() {
   const modal = document.querySelector('#classModal');
   if (!modal) return;
   modal.classList.remove('active');
